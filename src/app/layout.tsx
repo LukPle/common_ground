@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CitizenVoice - Participation Platform',
-  description: 'Shape your community\'s future through collaborative projects and citizen participation.',
+  title: 'Common Ground - Collaborative Planning Platform',
+  description: 'Unite your community around shared vision through collaborative urban planning and citizen participation.',
 };
 
 export default function RootLayout({

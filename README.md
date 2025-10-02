@@ -1,4 +1,13 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Common Ground
+
+A collaborative urban planning platform that brings communities together to envision and design their shared future through AI-enhanced visualization and inclusive participation.
+
+## Features
+
+- **Collaborative Planning**: Community members can contribute ideas and enhancements to urban development projects
+- **AI-Enhanced Visualization**: Uses Gemini AI to generate visual representations of community ideas
+- **Interactive Design Process**: Transform static project images into dynamic, enhanced visions
+- **Inclusive Participation**: Accessible platform for all community members to participate in planning
 
 ## Getting Started
 
@@ -16,9 +25,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To enable AI image generation, add your Gemini API key to your environment:
+
+```bash
+GEMINI_API_KEY=your_api_key_here
+```
+
+## Technology Stack
+
+This project is built with:
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Google Gemini AI** - AI-powered image generation
 
 ## Learn More
 

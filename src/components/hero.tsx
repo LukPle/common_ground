@@ -6,10 +6,10 @@ export const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Shape Your Community's Future
+            Building Communities on Common Ground
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Join fellow citizens in creating meaningful change. Share your ideas, collaborate on projects, and help build a better tomorrow.
+            Unite around shared vision. Collaborate on sustainable urban projects and help design the future we all want to live in.
           </p>
           <div className="flex justify-center gap-4">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
