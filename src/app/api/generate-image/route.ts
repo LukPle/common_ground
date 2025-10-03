@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-import mime from 'mime';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+
 
 export async function POST(request: NextRequest) {
   try {
     const { prompt, projectId, originalImage } = await request.json();
 
     if (!prompt) {
-      return NextResponse.json(
-        { error: 'Prompt is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    // Get Gemini API key from environment variables
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -26,10 +20,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Initialize Gemini AI client
     const genAI = new GoogleGenAI({ apiKey });
 
-    // Enhanced prompt for architectural/urban planning visualization
     const enhancedPrompt = `I have provided you with an original architectural/urban design image as reference. Please create an enhanced version that incorporates these specific improvements: ${prompt}
 
     CRITICAL INSTRUCTIONS:
@@ -46,205 +38,101 @@ export async function POST(request: NextRequest) {
     Remember: This is an ENHANCEMENT of the provided image, not a new creation from scratch.`;
 
     try {
-      // Configure the model with response modalities
-      const config = {
-        responseModalities: ['IMAGE', 'TEXT'],
-      };
-
+      const config = { responseModalities: ['IMAGE', 'TEXT'] };
       const model = 'gemini-2.5-flash-image-preview';
       
-      // Prepare the parts array starting with the image if provided
       const parts: any[] = [];
       
-      // Add the original image if provided
       if (originalImage) {
-        console.log('Processing original image:', originalImage);
-        // Convert image URL to base64 if it's a local path
-        let imageData: string = '';
-        let mimeType: string = 'image/jpeg';
-        
-        if (originalImage.startsWith('/')) {
-          // It's a local path, we need to read the file
-          try {
-            const fs = await import('fs/promises');
-            const path = await import('path');
-            const imagePath = path.join(process.cwd(), 'public', originalImage);
-            console.log('Reading image from path:', imagePath);
-            
-            const imageBuffer = await fs.readFile(imagePath);
-            imageData = imageBuffer.toString('base64');
-            
-            // Detect MIME type from file extension
-            const ext = path.extname(originalImage).toLowerCase();
-            switch (ext) {
-              case '.jpg':
-              case '.jpeg':
-                mimeType = 'image/jpeg';
-                break;
-              case '.png':
-                mimeType = 'image/png';
-                break;
-              case '.webp':
-                mimeType = 'image/webp';
-                break;
-              default:
-                mimeType = 'image/jpeg';
-            }
-            
-            console.log('Successfully read image, size:', imageBuffer.length, 'bytes, mimeType:', mimeType);
-          } catch (fileError) {
-            console.error('Could not read original image file:', fileError);
-            imageData = '';
-          }
-        } else if (originalImage.startsWith('data:')) {
-          // It's already a data URL
-          const [header, data] = originalImage.split(',');
-          imageData = data;
-          mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
-          console.log('Using data URL image, mimeType:', mimeType);
-        } else {
-          // It's an external URL - we'll skip image input for now
-          console.warn('External image URLs not supported for input');
-          imageData = '';
+        const imageUrl = originalImage.startsWith('/') 
+          ? new URL(originalImage, process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000') 
+          : new URL(originalImage);
+
+        console.log(`Fetching original image from: ${imageUrl}`);
+        const imageResponse = await fetch(imageUrl);
+
+        if (!imageResponse.ok) {
+          throw new Error(`Failed to fetch original image: ${imageResponse.statusText}`);
         }
         
-        if (imageData) {
-          console.log('Adding original image to Gemini prompt');
-          parts.push({
-            inlineData: {
-              mimeType,
-              data: imageData,
-            },
-          });
-        } else {
-          console.warn('No image data available to send to Gemini');
-        }
-      } else {
-        console.log('No original image provided');
+        const imageBuffer = await imageResponse.arrayBuffer();
+        const imageData = Buffer.from(imageBuffer).toString('base64');
+        const mimeType = imageResponse.headers.get('content-type') || 'image/jpeg';
+        
+        parts.push({ inlineData: { mimeType, data: imageData } });
       }
       
-      // Add the text prompt
-      parts.push({
-        text: enhancedPrompt,
-      });
+      parts.push({ text: enhancedPrompt });
 
-      const contents = [
-        {
-          role: 'user',
-          parts,
-        },
-      ];
+      const contents = [{ role: 'user', parts }];
 
-      console.log('Sending to Gemini:', {
-        model,
-        partsCount: parts.length,
-        hasImage: parts.some(part => part.inlineData),
-        hasText: parts.some(part => part.text),
-        projectId
-      });
+      console.log('Sending request to Gemini...');
 
-      // Generate content using streaming
       const response = await genAI.models.generateContentStream({
         model,
         config,
         contents,
       });
 
-      let fileIndex = 0;
-      let savedImagePaths: string[] = [];
-      let textResponse = '';
+      let generatedImageBase64: string | null = null;
+      let generatedMimeType: string | null = null;
 
-      // Process streaming response
       for await (const chunk of response) {
-        if (!chunk.candidates || !chunk.candidates[0].content || !chunk.candidates[0].content.parts) {
-          continue;
-        }
-
-        // Handle image data
         if (chunk.candidates?.[0]?.content?.parts?.[0]?.inlineData) {
-          const fileName = `generated_image_${projectId}_${Date.now()}_${fileIndex++}`;
           const inlineData = chunk.candidates[0].content.parts[0].inlineData;
-          const fileExtension = mime.getExtension(inlineData.mimeType || 'image/png') || 'png';
-          const buffer = Buffer.from(inlineData.data || '', 'base64');
-          
-          // Save to public/images directory
-          const publicDir = path.join(process.cwd(), 'public', 'images');
-          const filePath = path.join(publicDir, `${fileName}.${fileExtension}`);
-          
-          try {
-            await writeFile(filePath, buffer);
-            const publicPath = `/images/${fileName}.${fileExtension}`;
-            savedImagePaths.push(publicPath);
-            console.log(`Image saved: ${publicPath}`);
-          } catch (saveError) {
-            console.error(`Error saving image ${fileName}:`, saveError);
-          }
-        }
-        // Handle text response
-        else if (chunk.text) {
-          textResponse += chunk.text;
+          generatedImageBase64 = inlineData.data || null;
+          generatedMimeType = inlineData.mimeType || 'image/png';
+          break;
         }
       }
 
-      // Return the first saved image or fallback
-      const imageUrl = savedImagePaths.length > 0 
-        ? savedImagePaths[0] 
-        : null;
-
-      if (!imageUrl) {
-        throw new Error('No image generated in response');
+      if (!generatedImageBase64 || !generatedMimeType) {
+        throw new Error('No image data was generated in the response.');
       }
 
+      const imageUrl = `data:${generatedMimeType};base64,${generatedImageBase64}`;
+
+      console.log('Successfully generated image as Data URL.');
+      
       return NextResponse.json({
-        imageUrl,
-        savedImages: savedImagePaths,
-        textResponse,
-        prompt: enhancedPrompt,
-        projectId,
-        message: `Image generated successfully with Gemini API. Saved ${savedImagePaths.length} image(s).`
+        imageUrl: imageUrl,
+        message: `Image generated successfully.`
       });
 
     } catch (geminiError: any) {
       console.error('Gemini API error:', geminiError);
-      
-      // Handle specific quota exceeded errors
-      if (geminiError.status === 429 || geminiError.code === 429) {
-        const retryAfter = geminiError.message?.includes('30') ? '30 seconds' : 'a few minutes';
-        return NextResponse.json({
-          imageUrl: generateFallbackImage(prompt, projectId),
-          message: `⚠️ Gemini API quota exceeded. This usually means you've hit the free tier limits. Try again in ${retryAfter}, or consider upgrading to a paid plan for unlimited usage.`,
-          error: 'QUOTA_EXCEEDED',
-          retryAfter
-        });
-      }
-      
-      // Handle other API errors
       return NextResponse.json({
         imageUrl: generateFallbackImage(prompt, projectId),
-        message: 'Using fallback image generation due to Gemini API error',
+        message: 'Using fallback image generation due to Gemini API error.',
         error: 'API_ERROR'
       });
     }
 
   } catch (error) {
-    console.error('Error in image generation:', error);
-    
-    // Return fallback for any other errors
+    console.error('Error in image generation endpoint:', error);
     const { prompt, projectId } = await request.json().catch(() => ({ prompt: 'Unknown', projectId: 'unknown' }));
     return NextResponse.json({
       imageUrl: generateFallbackImage(prompt, projectId),
-      message: 'Using fallback image generation due to unexpected error'
+      message: 'Using fallback image generation due to an unexpected server error.'
     });
   }
 }
 
-// Fallback function for development/demo purposes
 function generateFallbackImage(prompt: string, projectId: string): string {
-  // Create a simple SVG placeholder with the prompt text
   const width = 800;
   const height = 450;
   
-  // Truncate prompt if too long
+  const escapeXml = (unsafe: string) => unsafe.replace(/[<>&'"]/g, c => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+
   const truncatedPrompt = prompt.length > 100 ? prompt.substring(0, 97) + '...' : prompt;
   
   const svg = `
@@ -256,10 +144,10 @@ function generateFallbackImage(prompt: string, projectId: string): string {
         </linearGradient>
       </defs>
       <rect width="100%" height="100%" fill="url(#grad)"/>
-      <text x="50%" y="35%" text-anchor="middle" fill="white" font-size="24" font-weight="bold">AI-Generated Vision</text>
-      <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="16">Project: ${projectId}</text>
-      <text x="50%" y="65%" text-anchor="middle" fill="white" font-size="14">${truncatedPrompt}</text>
-      <text x="50%" y="80%" text-anchor="middle" fill="white" font-size="12" opacity="0.8">Configure GEMINI_API_KEY for real AI generation</text>
+      <text x="50%" y="35%" text-anchor="middle" font-family="sans-serif" fill="white" font-size="24" font-weight="bold">AI-Generated Vision</text>
+      <text x="50%" y="50%" text-anchor="middle" font-family="sans-serif" fill="white" font-size="16">Project: ${escapeXml(projectId)}</text>
+      <text x="50%" y="65%" text-anchor="middle" font-family="sans-serif" fill="white" font-size="14">${escapeXml(truncatedPrompt)}</text>
+      <text x="50%" y="80%" text-anchor="middle" font-family="sans-serif" fill="white" font-size="12" opacity="0.8">Configure GEMINI_API_KEY for real AI generation</text>
     </svg>
   `;
   
