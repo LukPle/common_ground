@@ -4,11 +4,10 @@ export interface Project {
   description: string;
   category: string;
   status: string;
-  participants: number;
+  ideas: number;
   deadline: string;
   image: string;
   color: string;
   fullDescription?: string;
-  objectives?: string[];
-  location?: string;
+  limitations?: string[];
 }

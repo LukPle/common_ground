@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, Users, Calendar, Check } from 'lucide-react';
+import { ChevronRight, Lightbulb, Calendar, Check } from 'lucide-react';
 import { Project } from '../types/project';
 
 interface ProjectCardProps {
@@ -44,8 +44,8 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{project.participants}</span>
+                <Lightbulb className="w-4 h-4" />
+                <span>{project.ideas}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
