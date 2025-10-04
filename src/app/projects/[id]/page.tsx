@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
+import { getProjectStatus } from '../../../lib/utils';
 import { fetchProjectById, fetchProjectIds } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
 import { Project } from '@/src/types/project';
@@ -14,21 +15,6 @@ export async function generateStaticParams() {
   return projects.map((project) => ({
     id: project.reference,
   }));
-}
-
-export function getProjectStatus(deadline: string | null): 'Active' | 'Expired' {
-  if (!deadline) {
-    return 'Active';
-  }
-
-  const now = new Date();
-  const deadlineDate = new Date(deadline);
-
-  if (deadlineDate > now) {
-    return 'Active';
-  }
-
-  return 'Expired';
 }
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
