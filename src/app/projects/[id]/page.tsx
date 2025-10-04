@@ -7,7 +7,6 @@ import { Footer } from '../../../components/footer';
 import { getProjectStatus } from '../../../lib/utils';
 import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
-import { Project } from '@/src/types/project';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();
@@ -65,7 +64,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         
         <div className="absolute inset-0 flex flex-col justify-end pb-16">
           <div className="text-white max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto w-full">
-            <span className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
+            <span className="bg-white/10 backdrop-blur-2xl border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
               {project.category}
             </span>
             <h1 className="text-5xl md:text-6xl font-black mt-4 drop-shadow-lg">

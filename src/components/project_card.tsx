@@ -23,11 +23,10 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           
           <div className="absolute top-4 left-4">
             {/* 2. Stronger frosted glass effect for better readability */}
-            <span className="bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
+            <span className="bg-black/30 backdrop-blur-2xl text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
               {project.category}
             </span>
           </div>
-          {/* 3. "Active" status pill has been removed */}
         </div>
         
         <div className="p-6">

@@ -5,8 +5,20 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Common Ground - Collaborative Planning Platform',
-  description: 'Unite your community around shared vision through collaborative urban planning and citizen participation.',
+  title: 'Common Ground - Collaborative Citizen Participation',
+  description: 'Bring your voice to the table. Share ideas, shape policies, and co-create the cities we need for tomorrow.',
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+    other: [
+      { rel: "android-chrome", url: "/android-chrome-192x192.png" },
+      { rel: "android-chrome", url: "/android-chrome-512x512.png" },
+    ],
+  },
 };
 
 export default function RootLayout({

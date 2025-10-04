@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Users, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export const Header = () => {
   const pathname = usePathname();
@@ -26,9 +27,13 @@ export const Header = () => {
           <div className="flex justify-between items-center py-4">
             {/* Logo Section */}
             <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
+              <Image
+                src="/images/common_ground_logo.svg"
+                alt="Common Ground Logo"
+                width={56}
+                height={56}
+                priority
+              />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Common Ground</h1>
                 <p className="text-xs text-gray-500">Collaborative Citizen Participation</p>
