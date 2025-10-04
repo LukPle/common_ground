@@ -1,5 +1,6 @@
 import { createClient as createServerClient } from './server';
 import { Project } from '../../types/project';
+import { Idea } from '../../types/idea';
 import { unstable_noStore as noStore } from 'next/cache';
 import { createServerClient as createClientForBuild } from '@supabase/ssr';
 
@@ -46,4 +47,20 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
     return [];
   }
   return data;
+}
+
+export async function fetchIdeasForProject(projectReference: string): Promise<Idea[]> {
+  noStore();
+  const supabase = createServerClient();
+  const { data: ideas, error } = await supabase
+    .from('ideas')
+    .select('*')
+    .eq('project_reference', projectReference)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Database Error fetching ideas:', error.message);
+    return [];
+  }
+  return ideas;
 }

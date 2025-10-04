@@ -1,18 +1,24 @@
 'use client';
 
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, ChevronRight, Loader2, Image as ImageIcon, Sparkles } from 'lucide-react';
-import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
+import { Lightbulb, ChevronRight, Loader2, Image as ImageIcon, Sparkles, Send } from 'lucide-react';
+import { fetchProjectByIdClient, createIdea } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
+import { NewIdea } from '../../../../types/idea';
 
 export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
   const [idea, setIdea] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+
+  const [title, setTitle] = useState('');
+  const [submissionDescription, setSubmissionDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,13 +40,15 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     getProjectData();
   }, [params.id]);
 
-  const handleSubmitIdea = async (e: React.FormEvent) => {
+  const handleGenerateVision = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idea.trim() || !project) return;
 
     setIsGenerating(true);
-    setFormError(null);
+    setGenerationError(null);
     setGeneratedImage(null);
+    setSubmissionStatus('idle');
+    setTitle('');
 
     try {
       const prompt = `${idea}. Enhance this ${project.title} design by integrating these improvements while maintaining the original architectural character and composition as close as possible.`;
@@ -62,15 +70,50 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
       const data = await response.json();
       setGeneratedImage(data.imageUrl);
+      setSubmissionDescription(idea);
     } catch (err: any) {
-      setFormError(err.message || 'An unknown error occurred. Please try again.');
+      setGenerationError(err.message || 'An unknown error occurred. Please try again.');
       console.error('Error generating image:', err);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // === Loading and Error States ===
+  const handleSubmitToDatabase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !submissionDescription.trim() || !generatedImage || !project) return;
+
+    setIsSubmitting(true);
+    setSubmissionStatus('idle');
+
+    try {
+      const userIdCookie = document.cookie.split('; ').find(row => row.startsWith('anonymous-user-id='));
+      const userId = userIdCookie ? userIdCookie.split('=')[1] : 'unknown';
+
+      const newIdea: NewIdea = {
+        title: title,
+        description: submissionDescription,
+        generated_image: generatedImage,
+        project_reference: project.reference,
+        user_id: userId,
+      };
+
+      const { error } = await createIdea(newIdea);
+
+      if (error) {
+        throw error;
+      }
+      
+      setSubmissionStatus('success');
+
+    } catch (err) {
+      console.error("Submission failed", err);
+      setSubmissionStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -99,7 +142,6 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     return <div>Project could not be loaded.</div>;
   }
 
-  // === Main Content Render ===
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -139,7 +181,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
               </div>
             </div>
             
-            <form onSubmit={handleSubmitIdea} className="space-y-6">
+            <form onSubmit={handleGenerateVision} className="space-y-6">
               <div>
                 <label htmlFor="idea" className="block text-sm font-medium text-gray-700 mb-2">Describe Your Enhancement</label>
                 <textarea
@@ -163,13 +205,13 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
               </button>
             </form>
 
-            {formError && (
+            {generationError && (
               <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm font-medium text-center">{formError}</p>
+                <p className="text-red-700 text-sm font-medium text-center">{generationError}</p>
               </div>
             )}
-
-            {isGenerating && !generatedImage && (
+            
+            {isGenerating && (
               <div className="mt-8 p-8 bg-gray-50 border border-gray-200 rounded-xl text-center">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Creating Your Vision</h3>
@@ -183,18 +225,68 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                   <Sparkles className="w-5 h-5 text-blue-600" />
                   Enhanced Design
                 </h3>
-                <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200 mb-8">
                   <div className="aspect-[16/10] w-full">
-                    <img src={generatedImage} alt="Generated project vision based on user idea" className="w-full h-full object-cover" />
+                    <img 
+                      src={generatedImage} 
+                      alt="Generated project vision based on user idea"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
+                
+                {submissionStatus !== 'success' && (
+                  <form onSubmit={handleSubmitToDatabase} className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <div>
+                      <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Idea Title</label>
+                      <input
+                        type="text"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g., 'Eco-Friendly Playground & Solar Hub'"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="submissionDescription" className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <textarea
+                        id="submissionDescription"
+                        value={submissionDescription}
+                        onChange={(e) => setSubmissionDescription(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                        rows={4}
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={!title.trim() || isSubmitting}
+                      className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (<><Loader2 className="w-5 h-5 animate-spin" /> Submitting...</>) : (<><Send className="w-5 h-5" /> Submit Idea</>)}
+                    </button>
+                  </form>
+                )}
+                
+                {submissionStatus === 'success' && (
+                  <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl text-center">
+                    <h3 className="text-green-800 font-semibold">Thank you!</h3>
+                    <p className="text-green-700 text-sm">Your idea has been successfully submitted to the project.</p>
+                  </div>
+                )}
+                {submissionStatus === 'error' && (
+                  <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                    <p className="text-red-700 text-sm font-medium">Submission failed. Please try again.</p>
+                  </div>
+                )}
               </div>
             )}
 
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

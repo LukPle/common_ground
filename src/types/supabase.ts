@@ -45,24 +45,27 @@ export type Database = {
           description: string | null
           generated_image: string | null
           id: number
-          project_reference: string | null
-          title: string | null
+          project_reference: string
+          title: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           generated_image?: string | null
           id?: number
-          project_reference?: string | null
-          title?: string | null
+          project_reference: string
+          title?: string
+          user_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
           generated_image?: string | null
           id?: number
-          project_reference?: string | null
-          title?: string | null
+          project_reference?: string
+          title?: string
+          user_id?: string
         }
         Relationships: [
           {
