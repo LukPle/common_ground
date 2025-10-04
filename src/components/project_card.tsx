@@ -42,7 +42,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center gap-1.5" title="Ideas Submitted">
                 <Lightbulb className="w-4 h-4" />
-                <span>{15}</span>
+                <span>{project.idea_count}</span>
               </div>
               <div className="flex items-center gap-1.5" title="Submission Deadline">
                 <Calendar className="w-4 h-4" />

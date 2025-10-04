@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
 import { getProjectStatus } from '../../../lib/utils';
-import { fetchProjectById, fetchProjectIds } from '../../../lib/supabase/queries.server';
+import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
 import { Project } from '@/src/types/project';
 
@@ -18,7 +18,13 @@ export async function generateStaticParams() {
 }
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const project: Project | null = await fetchProjectById(params.id);
+  const projectDataPromise = fetchProjectById(params.id);
+  const ideaCountPromise = fetchIdeaCountForProject(params.id);
+
+  const [project, ideaCount] = await Promise.all([
+    projectDataPromise,
+    ideaCountPromise,
+  ]);
 
   if (!project) {
     notFound();
@@ -98,7 +104,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-500">Community Input</p>
-                <p className="text-lg font-semibold text-gray-900">{15} ideas submitted</p>
+                <p className="text-lg font-semibold text-gray-900">{ideaCount} ideas submitted</p>
               </div>
             </div>
           </div>
@@ -112,15 +118,15 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               </p>
             </div>
 
-            {/* Key Objectives (Bento Grid) */}
+            {/* Limitations */}
             {project.limitations && project.limitations.length > 0 && (
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Key Objectives</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Limitations</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {project.limitations.map((objective, idx) => (
+                  {project.limitations.map((limitation, idx) => (
                     <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-3 transition-all hover:border-blue-500 hover:bg-blue-50">
                       <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{objective}</span>
+                      <span className="text-sm text-gray-700">{limitation}</span>
                     </div>
                   ))}
                 </div>

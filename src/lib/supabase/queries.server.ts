@@ -7,13 +7,13 @@ import { createServerClient as createClientForBuild } from '@supabase/ssr';
 export async function fetchProjects(): Promise<Project[]> {
   noStore();
   const supabase = createServerClient();
-  const { data: projects, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+  const { data: projects, error } = await supabase.rpc('get_projects_with_idea_counts');
 
   if (error) {
     console.error('Database Error:', error.message);
     return []; 
   }
-  return projects;
+  return projects || [];
 }
 
 export async function fetchProjectById(id: string): Promise<Project | null> {
@@ -47,6 +47,23 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
     return [];
   }
   return data;
+}
+
+export async function fetchIdeaCountForProject(projectReference: string): Promise<number> {
+  noStore();
+  const supabase = createServerClient();
+  
+  const { count, error } = await supabase
+    .from('ideas')
+    .select('*', { count: 'exact', head: true })
+    .eq('project_reference', projectReference);
+
+  if (error) {
+    console.error('Database Error fetching idea count:', error.message);
+    return 0;
+  }
+
+  return count || 0;
 }
 
 export async function fetchIdeasForProject(projectReference: string): Promise<Idea[]> {
