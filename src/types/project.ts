@@ -1,13 +1,3 @@
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  status: string;
-  ideas: number;
-  deadline: string;
-  image: string;
-  color: string;
-  fullDescription?: string;
-  limitations?: string[];
-}
+import { Database } from './supabase';
+
+export type Project = Database['public']['Tables']['projects']['Row'];

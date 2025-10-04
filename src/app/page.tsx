@@ -3,9 +3,11 @@ import { Header } from '../components/header';
 import { Hero } from '../components/hero';
 import { ProjectCard } from '../components/project_card';
 import { Footer } from '../components/footer';
-import { projects } from '../data/projects';
+import { fetchProjects } from '../lib/supabase/queries.server';
 
-export default function Home() {
+export default async function Home() {
+  const projects = await fetchProjects();
+
   return (
     <div className="min-h-screen bg-white">
       <Header />

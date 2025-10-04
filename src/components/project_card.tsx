@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, Lightbulb, Calendar, Check } from 'lucide-react';
+import { ChevronRight, Lightbulb, Calendar } from 'lucide-react';
 import { Project } from '../types/project';
 
 interface ProjectCardProps {
@@ -10,49 +10,52 @@ interface ProjectCardProps {
 
 export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
-    <Link href={`/projects/${project.id}`} className="block">
-      <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 group">
+    <Link href={`/projects/${project.reference}`} className="block group">
+      {/* 1. More subtle shadow effect on hover */}
+      <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 border border-gray-100">
         <div className="relative h-48 overflow-hidden">
-          <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-90`} />
           <Image 
             src={project.image} 
             alt={project.title}
             fill
             className="object-cover"
           />
+          
           <div className="absolute top-4 left-4">
-            <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-sm font-semibold">
+            {/* 2. Stronger frosted glass effect for better readability */}
+            <span className="bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
               {project.category}
             </span>
           </div>
-          <div className="absolute top-4 right-4">
-            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-              <Check className="w-4 h-4" />
-              {project.status}
-            </span>
-          </div>
+          {/* 3. "Active" status pill has been removed */}
         </div>
         
         <div className="p-6">
-          <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
             {project.title}
           </h3>
-          <p className="text-gray-600 mb-4 line-clamp-2">
-            {project.description}
+          <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+            {project.short_description}
           </p>
           
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5" title="Ideas Submitted">
                 <Lightbulb className="w-4 h-4" />
-                <span>{project.ideas}</span>
+                <span>{15}</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5" title="Submission Deadline">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(project.deadline).toLocaleDateString()}</span>
+                <span>
+                  {new Date(project.deadline).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric' 
+                  })}
+                </span>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
           </div>
         </div>
       </div>

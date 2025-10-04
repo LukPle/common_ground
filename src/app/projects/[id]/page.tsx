@@ -4,17 +4,35 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
-import { projects } from '../../../data/projects';
+import { fetchProjectById, fetchProjectIds } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
+import { Project } from '@/src/types/project';
 
 export async function generateStaticParams() {
+  const projects = await fetchProjectIds();
+
   return projects.map((project) => ({
-    id: project.id,
+    id: project.reference,
   }));
 }
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const project = projects.find(p => p.id === params.id);
+export function getProjectStatus(deadline: string | null): 'Active' | 'Expired' {
+  if (!deadline) {
+    return 'Active';
+  }
+
+  const now = new Date();
+  const deadlineDate = new Date(deadline);
+
+  if (deadlineDate > now) {
+    return 'Active';
+  }
+
+  return 'Expired';
+}
+
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const project: Project | null = await fetchProjectById(params.id);
 
   if (!project) {
     notFound();
@@ -23,6 +41,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   const now = new Date();
   const deadline = new Date(project.deadline);
   const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const status = getProjectStatus(project.deadline);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,8 +69,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10" />
-        <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
         
         <div className="absolute inset-0 flex flex-col justify-end pb-16">
           <div className="text-white max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto w-full">
@@ -62,7 +80,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               {project.title}
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-3xl mt-2 drop-shadow-md">
-              {project.description}
+              {project.short_description}
             </p>
           </div>
         </div>
@@ -75,10 +93,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           {/* At-a-Glance Info Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3">
             <div className="p-6 flex items-center gap-4">
-              <Users className={`w-8 h-8 ${project.color.replace('from-', 'text-').split(' ')[0]}`} />
+              <Users className={`w-8 h-8`} />
               <div>
                 <p className="text-sm text-gray-500">Status</p>
-                <p className="text-lg font-semibold text-gray-900">{project.status}</p>
+                <p className="text-lg font-semibold text-gray-900">{status}</p>
               </div>
             </div>
             <div className="p-6 flex items-center gap-4 sm:border-l sm:border-r">
@@ -94,7 +112,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-500">Community Input</p>
-                <p className="text-lg font-semibold text-gray-900">{project.ideas} ideas submitted</p>
+                <p className="text-lg font-semibold text-gray-900">{15} ideas submitted</p>
               </div>
             </div>
           </div>
@@ -104,7 +122,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Project</h2>
               <p className="text-gray-600 leading-relaxed text-base">
-                {project.fullDescription}
+                {project.full_description}
               </p>
             </div>
 
@@ -130,7 +148,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 Your perspective is crucial. Share your vision for the park and help shape this project's future.
               </p>
-              <Link href={`/projects/${project.id}/ideation`}>
+              <Link href={`/projects/${project.reference}/ideation`}>
                 <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-flex items-center gap-2">
                   Submit Your Idea
                   <ArrowRight className="w-5 h-5" />
