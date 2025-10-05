@@ -1,33 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { NewIdea } from '../../../types/idea';
+import { Database } from '../../../types/supabase';
+import sharp from 'sharp';
+
+type NewIdea = Database['public']['Tables']['ideas']['Insert'];
+
+interface SubmitIdeaRequestBody {
+  title: string;
+  description: string;
+  generatedImage: string;
+  project_reference: string;
+  user_id: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, description, generatedImage, project_reference, user_id }: NewIdea & { generatedImage: string } = await request.json();
+    const { 
+      title, 
+      description, 
+      generatedImage, 
+      project_reference, 
+      user_id 
+    }: SubmitIdeaRequestBody = await request.json();
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error("Missing Supabase Service Role Key.");
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      throw new Error("Server configuration error: Missing Supabase credentials.");
     }
 
     const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
     const base64Data = generatedImage.split(';base64,').pop();
-    if (!base64Data) {
-      throw new Error("Invalid image data format.");
-    }
+    if (!base64Data) throw new Error("Invalid image data format.");
     
-    const fileBuffer = Buffer.from(base64Data, 'base64');
-    const mimeType = generatedImage.split(';')[0].split(':')[1];
-    const fileExtension = mimeType.split('/')[1] || 'png';
-    const fileName = `idea-${project_reference}-${title}-${Date.now()}.${fileExtension}`;
+    const initialBuffer = Buffer.from(base64Data, 'base64');
+
+    console.log(`Optimizing image... Original size: ${Math.round(initialBuffer.length / 1024)} KB`);
+
+    const optimizedBuffer = await sharp(initialBuffer)
+      .resize(1280)
+      .webp({ quality: 80 })
+      .toBuffer();
+
+    console.log(`Optimization complete. New size: ${Math.round(optimizedBuffer.length / 1024)} KB`);
+
+    const fileName = `idea-${project_reference}-${title}-${Date.now()}.webp`;
+    const mimeType = 'image/webp';
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from('generated_images')
-      .upload(fileName, fileBuffer, { contentType: mimeType, upsert: false });
+      .upload(fileName, optimizedBuffer, { contentType: mimeType, upsert: false });
 
     if (uploadError) {
       throw new Error(`Storage upload failed: ${uploadError.message}`);
@@ -46,8 +70,8 @@ export async function POST(request: NextRequest) {
       title,
       description,
       generated_image: publicUrl,
-      project_reference: project_reference,
-      user_id: user_id,
+      project_reference,
+      user_id,
     };
 
     const { error: insertError } = await supabaseAdmin
@@ -59,11 +83,10 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Successfully saved idea to database.');
-
-    return NextResponse.json({ message: "Idea submitted successfully!" });
+    return NextResponse.json({ message: "Idea submitted successfully!" }, { status: 200 });
 
   } catch (error: any) {
-    console.error('Error in submit-idea endpoint:', error);
+    console.error('Error in /api/submit-idea:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
