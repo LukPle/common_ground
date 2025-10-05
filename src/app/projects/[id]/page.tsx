@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
+import { IdeaCard } from '../../../components/idea_card';
 import { getProjectStatus } from '../../../lib/utils';
-import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject } from '../../../lib/supabase/queries.server';
+import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject, fetchIdeasForProject } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
+import { Idea } from '../../../types/idea';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();
@@ -19,10 +21,12 @@ export async function generateStaticParams() {
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const projectDataPromise = fetchProjectById(params.id);
   const ideaCountPromise = fetchIdeaCountForProject(params.id);
+  const ideasPromise = fetchIdeasForProject(params.id);
 
-  const [project, ideaCount] = await Promise.all([
+  const [project, ideaCount, ideas] = await Promise.all([
     projectDataPromise,
     ideaCountPromise,
+    ideasPromise,
   ]);
 
   if (!project) {
@@ -131,6 +135,24 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </div>
               </div>
             )}
+
+            {/* Idea List */}
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
+              {ideas && ideas.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {ideas.map((idea: Idea) => (
+                    <IdeaCard key={idea.id} idea={idea} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 px-6 bg-gray-50 rounded-xl border">
+                  <Lightbulb className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                  <h4 className="font-semibold text-gray-800">No Ideas Yet</h4>
+                  <p className="text-sm text-gray-500 mt-1">Be the first one to share a vision for this project!</p>
+                </div>
+              )}
+            </div>
             
             {/* Call to Action */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
