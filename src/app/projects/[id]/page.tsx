@@ -137,22 +137,16 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             )}
 
             {/* Idea List */}
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
-              {ideas && ideas.length > 0 ? (
+            {ideas && ideas.length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ideas.map((idea: Idea) => (
                     <IdeaCard key={idea.id} idea={idea} />
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-10 px-6 bg-gray-50 rounded-xl border">
-                  <Lightbulb className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                  <h4 className="font-semibold text-gray-800">No Ideas Yet</h4>
-                  <p className="text-sm text-gray-500 mt-1">Be the first one to share a vision for this project!</p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
             
             {/* Call to Action */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 text-center">

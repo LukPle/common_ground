@@ -14,14 +14,6 @@ export const Hero = () => {
           <p className="text-xl text-gray-600 mb-8">
             Bring your voice to the table. Share ideas, shape policies, and co-create the cities we need for tomorrow.
           </p>
-          <div className="flex justify-center gap-4">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Explore Projects
-            </button>
-            <button className="bg-white text-gray-700 px-8 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all border border-gray-200">
-              Learn More
-            </button>
-          </div>
         </div>
       </div>
     </div>
