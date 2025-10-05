@@ -90,23 +90,26 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       const userIdCookie = document.cookie.split('; ').find(row => row.startsWith('anonymous-user-id='));
       const userId = userIdCookie ? userIdCookie.split('=')[1] : 'unknown';
 
-      const newIdea: NewIdea = {
-        title: title,
-        description: submissionDescription,
-        generated_image: generatedImage,
-        project_reference: project.reference,
-        user_id: userId,
-      };
+      const response = await fetch('/api/submit-idea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title,
+          description: submissionDescription,
+          generatedImage: generatedImage,
+          project_reference: project.reference,
+          user_id: userId,
+        }),
+      });
 
-      const { error } = await createIdea(newIdea);
-
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit idea.');
       }
       
       setSubmissionStatus('success');
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Submission failed", err);
       setSubmissionStatus('error');
     } finally {
