@@ -68,7 +68,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         
         <div className="absolute inset-0 flex flex-col justify-end pb-16">
           <div className="text-white max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto w-full">
-            <span className="bg-white/10 backdrop-blur-2xl border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
+            <span className="bg-white/20 backdrop-blur-2xl border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
               {project.category}
             </span>
             <h1 className="text-5xl md:text-6xl font-black mt-4 drop-shadow-lg">
@@ -127,7 +127,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Limitations</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {project.limitations.map((limitation, idx) => (
-                    <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-3 transition-all hover:border-blue-500 hover:bg-blue-50">
+                    <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-3 transition-all">
                       <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                       <span className="text-sm text-gray-700">{limitation}</span>
                     </div>

@@ -11,18 +11,16 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Link href={`/projects/${project.reference}`} className="block group">
-      {/* 1. More subtle shadow effect on hover */}
-      <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 border border-gray-100">
+      <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 border border-gray-100">
         <div className="relative h-48 overflow-hidden">
           <Image 
             src={project.image} 
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           
           <div className="absolute top-4 left-4">
-            {/* 2. Stronger frosted glass effect for better readability */}
             <span className="bg-black/30 backdrop-blur-2xl text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
               {project.category}
             </span>
@@ -54,7 +52,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                 </span>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-all" />
           </div>
         </div>
       </div>

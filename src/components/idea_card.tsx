@@ -9,7 +9,7 @@ interface IdeaCardProps {
 
 export const IdeaCard = ({ idea }: IdeaCardProps) => {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group">
       <div className="relative h-48 overflow-hidden">
         {idea.generated_image ? (
           <Image 
