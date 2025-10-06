@@ -69,10 +69,30 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
       const data = await response.json();
       setGeneratedImage(data.imageUrl);
-      setSubmissionDescription(idea);
+
+      try {
+        const suggestionResponse = await fetch('/api/generate-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: idea }),
+        });
+
+        if (suggestionResponse.ok) {
+          const suggestionData = await suggestionResponse.json();
+          setTitle(suggestionData.suggestedTitle);
+          setSubmissionDescription(suggestionData.suggestedDescription);
+        } else {
+          throw new Error("Failed to get AI suggestions.");
+        }
+      } catch (suggestionError) {
+        console.error("Could not fetch suggestions, using fallback:", suggestionError);
+        setTitle('Museum, Plaza, Playground, ...');
+        setSubmissionDescription(idea);
+      }
+
     } catch (err: any) {
-      setGenerationError(err.message || 'An unknown error occurred. Please try again.');
-      console.error('Error generating image:', err);
+      setGenerationError(err.message || 'An unknown error occurred.');
+      console.error('Error generating vision:', err);
     } finally {
       setIsGenerating(false);
     }
