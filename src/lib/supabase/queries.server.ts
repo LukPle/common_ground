@@ -81,3 +81,41 @@ export async function fetchIdeasForProject(projectReference: string): Promise<Id
   }
   return ideas;
 }
+
+export async function fetchIdeaById(id: number): Promise<Idea | null> {
+  noStore();
+  const supabase = createServerClient();
+  const { data: idea, error } = await supabase
+    .from('ideas')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error(`Database Error fetching idea with id ${id}:`, error.message);
+    return null;
+  }
+  return idea;
+}
+
+export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId: string }[]> {
+  const supabase = createClientForBuild(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { get() { return undefined; }, set() {}, remove() {} } }
+  );
+
+  const { data, error } = await supabase
+    .from('ideas')
+    .select('id, project_reference');
+
+  if (error) {
+    console.error('Database Error during build (fetchAllProjectAndIdeaIds):', error.message);
+    return [];
+  }
+  
+  return data.map(item => ({
+    id: item.project_reference,
+    ideaId: String(item.id),
+  }));
+}

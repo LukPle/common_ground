@@ -4,10 +4,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, ChevronRight, Loader2, Image as ImageIcon, Sparkles, Send } from 'lucide-react';
-import { fetchProjectByIdClient, createIdea } from '../../../../lib/supabase/queries.client';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight } from 'lucide-react';
+import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
-import { NewIdea } from '../../../../types/idea';
 
 export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
   const [idea, setIdea] = useState('');
@@ -150,15 +149,34 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       <Header />
       
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <Link 
-            href={`/projects/${params.id}`}
-            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors w-fit"
-          >
-            <ChevronRight className="w-4 h-4 rotate-180" />
-            Back to Project Details
-          </Link>
-        </div>
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <ol className="flex items-center space-x-2 text-sm text-gray-500">
+            <li>
+              <Link href="/" className="hover:text-gray-900 transition-colors">
+                Projects
+              </Link>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
+                <Link 
+                  href={`/projects/${project.reference}`}
+                  className="ml-2 hover:text-gray-900 transition-colors"
+                >
+                  {project.title}
+                </Link>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
+                <span className="ml-2 font-medium text-gray-800 truncate" title="Ideation">
+                  Ideation
+                </span>
+              </div>
+            </li>
+          </ol>
+        </nav>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">

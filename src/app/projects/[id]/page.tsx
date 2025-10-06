@@ -42,17 +42,25 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Breadcrumb Navigation */}
+      {/* Breadcrumbs Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <Link 
-            href="/"
-            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors w-fit"
-          >
-            <ChevronRight className="w-4 h-4 rotate-180" />
-            Back to Projects
-          </Link>
-        </div>
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <ol className="flex items-center space-x-2 text-sm text-gray-500">
+            <li>
+              <Link href="/" className="hover:text-gray-900 transition-colors">
+                Projects
+              </Link>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
+                <span className="ml-2 font-medium text-gray-800 truncate" title={project.title}>
+                  {project.title}
+                </span>
+              </div>
+            </li>
+          </ol>
+        </nav>
       </div>
 
       {/* Hero Section */}

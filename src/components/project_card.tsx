@@ -21,14 +21,14 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           />
           
           <div className="absolute top-4 left-4">
-            <span className="bg-black/30 backdrop-blur-2xl text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
+            <span className="bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
               {project.category}
             </span>
           </div>
         </div>
         
         <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
             {project.title}
           </h3>
           <p className="text-gray-500 text-sm mb-4 line-clamp-2">
