@@ -7,7 +7,7 @@ import { teamMembers } from '../../data/team_members';
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
       {/* Hero Section */}

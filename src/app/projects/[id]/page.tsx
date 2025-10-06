@@ -90,12 +90,12 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 divide-y divide-gray-200">
           
           {/* At-a-Glance Info Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3">
-            <div className="p-6 flex items-center gap-4">
+            <div className="py-6 px-8 sm:px-10 flex items-center gap-4">
               <Users className={`w-8 h-8`} />
               <div>
                 <p className="text-sm text-gray-500">Status</p>

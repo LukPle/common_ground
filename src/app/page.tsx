@@ -9,7 +9,7 @@ export default async function Home() {
   const projects = await fetchProjects();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       <Hero />
       
