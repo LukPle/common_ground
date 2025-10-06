@@ -199,7 +199,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 sm:p-10">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">

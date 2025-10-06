@@ -57,7 +57,7 @@ export default async function IdeaDetailPage({ params }: { params: { id: string;
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           
           <div className="relative aspect-[16/10] w-full bg-gray-100">
