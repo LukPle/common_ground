@@ -100,7 +100,7 @@ export default function About() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div key={index} className="bg-white rounded-2xl p-6 overflow-hidden shadow border border-gray-100">
                 <div className="text-center">
                   <div className="w-24 h-24 mx-auto mb-4 relative">
                     <Image 
