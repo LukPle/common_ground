@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight } from 'lucide-react';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw } from 'lucide-react';
 import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
 
@@ -62,12 +62,12 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to generate image');
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.message || 'Failed to generate image. Please try again or adjust your prompt.');
       }
 
-      const data = await response.json();
       setGeneratedImage(data.imageUrl);
 
       try {
@@ -86,7 +86,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
         }
       } catch (suggestionError) {
         console.error("Could not fetch suggestions, using fallback:", suggestionError);
-        setTitle('Museum, Plaza, Playground, ...');
+        setTitle('A new vision for ' + project.title); // More specific fallback
         setSubmissionDescription(idea);
       }
 
@@ -245,22 +245,33 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                 {isGenerating ? (<><Loader2 className="w-5 h-5 animate-spin" /> Generating Vision...</>) : (<><Sparkles className="w-5 h-5" /> Generate Updated Vision</>)}
               </button>
             </form>
-
-            {generationError && (
-              <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm font-medium text-center">{generationError}</p>
-              </div>
-            )}
             
             {isGenerating && (
               <div className="mt-8 p-8 bg-gray-50 border border-gray-200 rounded-xl text-center">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Creating Your Vision</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Creating Your Vision...</h3>
                 <p className="text-gray-600 text-sm">Our AI is generating a visual representation of your idea. This can take up to 30 seconds.</p>
               </div>
             )}
-
-            {generatedImage && (
+            
+            {generationError && !isGenerating && (
+              <div className="mt-8 p-8 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                <TriangleAlert className="w-8 h-8 text-amber-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-amber-900 mb-2">Image Generation Failed</h3>
+                <p className="text-amber-800 text-sm max-w-md mx-auto">
+                  This can happen if the request is unclear or violates safety policies. Please try refining your prompt or click to try again.
+                </p>
+                <button
+                  onClick={(e) => handleGenerateVision(e as any)}
+                  className="mt-6 bg-white border border-amber-300 rounded-full p-2 hover:bg-amber-100/50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                  aria-label="Retry image generation"
+                >
+                  <RotateCw className="w-5 h-5 text-amber-600" />
+                </button>
+              </div>
+            )}
+            
+            {generatedImage && !isGenerating && !generationError && (
               <div className="mt-10">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-600" />

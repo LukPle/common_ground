@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Hero = () => {
   return (
-    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20">
+    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 md:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">

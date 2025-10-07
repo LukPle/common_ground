@@ -3,7 +3,7 @@ import { Compass, Sparkles, Send } from 'lucide-react';
 
 export const HowTo = () => {
   return (
-    <div className="bg-gray-50 pt-32">
+    <div className="bg-gray-50 pt-20 md:pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
         <div className="max-w-3xl mb-8">
@@ -13,7 +13,7 @@ export const HowTo = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
           <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-200/75 bg-white shadow-sm">
             <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-blue-100/70 to-white"></div>
