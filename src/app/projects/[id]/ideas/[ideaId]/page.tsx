@@ -77,7 +77,7 @@ export default async function IdeaDetailPage({ params }: { params: { id: string;
           <div>
             <div className="p-8 sm:p-10 space-y-8">
                 <div className="space-y-4">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                         {idea.title}
                     </h1>
                     {idea.description && (
