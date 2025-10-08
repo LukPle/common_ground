@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, Check, CircleDotDashed } from 'lucide-react';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight, CircleDotDashed } from 'lucide-react';
 import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
 import { Step } from '../../../../components/step';
@@ -130,6 +130,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const isStep2Active = isStep1Complete;
   const isStep2Complete = isStep1Complete;
   const isStep3Active = isStep2Complete;
+  const isStep3Complete = submissionStatus === 'success';
   const isSubmitEnabled = isStep3Active && !!title.trim() && !!submissionDescription.trim() && !isSubmitting;
 
   return (
@@ -200,7 +201,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                   </div>
                 </Step>
 
-                <Step number={3} title="Add Your Details" isLastStep={true} isComplete={false} isActive={isStep3Active}>
+                <Step number={3} title="Add Your Details" isLastStep={true} isComplete={isStep3Complete} isActive={isStep3Active}>
                   <form className="space-y-6">
                     <div>
                       <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">Idea Title</label>
@@ -213,7 +214,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                   </form>
                 </Step>
 
-                <div className="pt-4">
+                <div>
                   {submissionStatus !== 'success' && (
                     <div className="text-center">
                       <button onClick={handleSubmitToDatabase} disabled={!isSubmitEnabled} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
@@ -221,8 +222,30 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                       </button>
                     </div>
                   )}
-                  {submissionStatus === 'success' && (<div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl text-center"><h3 className="text-green-800 font-semibold">Thank you!</h3><p className="text-green-700 text-sm">Your idea has been successfully submitted to the project.</p></div>)}
-                  {submissionStatus === 'error' && (<div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-center"><p className="text-red-700 text-sm font-medium">Submission failed. Please try again.</p></div>)}
+                  {submissionStatus === 'success' && (
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center">
+                      <CircleCheckBig className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+                      
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Thank you!</h3>
+                      <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                        Your idea has been successfully submitted and is now visible on the project page.
+                      </p>
+
+                      <Link href={`/projects/${project.reference}`}>
+                        <span className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-flex items-center gap-2">
+                          View Project Details
+                          <ArrowRight className="w-5 h-5" />
+                        </span>
+                      </Link>
+                    </div>
+                  )}
+                  {submissionStatus === 'error' && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                      <p className="text-red-700 text-sm font-medium">
+                        Submission failed. Please try again.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
