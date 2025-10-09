@@ -4,16 +4,25 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight, CircleDotDashed } from 'lucide-react';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, CircleCheck, XCircle, CircleQuestionMark, ArrowRight } from 'lucide-react';
 import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
 import { Step } from '../../../../components/step';
+
+type RealityCheckResult = {
+  limitation: string;
+  status: 'Check' | 'Depending' | 'Violation';
+};
 
 export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
   const [idea, setIdea] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
+
+  const [isCheckingReality, setIsCheckingReality] = useState(false);
+  const [realityCheckResults, setRealityCheckResults] = useState<RealityCheckResult[] | null>(null);
+  const [realityCheckError, setRealityCheckError] = useState<string | null>(null);
 
   const [title, setTitle] = useState('');
   const [submissionDescription, setSubmissionDescription] = useState('');
@@ -41,6 +50,34 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     getProjectData();
   }, [params.id]);
 
+
+  useEffect(() => {
+    if (generatedImage && project?.limitations && project.limitations.length > 0) {
+      const performRealityCheck = async () => {
+        setIsCheckingReality(true);
+        setRealityCheckError(null);
+        setRealityCheckResults(null);
+        try {
+          const response = await fetch('/api/reality-check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: idea, limitations: project.limitations }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'The reality check failed.');
+          }
+          setRealityCheckResults(data.results);
+        } catch (error: any) {
+          setRealityCheckError(error.message);
+        } finally {
+          setIsCheckingReality(false);
+        }
+      };
+      performRealityCheck();
+    }
+  }, [generatedImage, project, idea]);
+
   const handleGenerateVision = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idea.trim() || !project) return;
@@ -48,8 +85,9 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     setIsGenerating(true);
     setGenerationError(null);
     setGeneratedImage(null);
-    setSubmissionStatus('idle');
+    setRealityCheckResults(null);
     setTitle('');
+    setSubmissionStatus('idle');
 
     try {
       const prompt = `${idea}. Enhance this ${project.title} design by integrating these improvements while maintaining the original architectural character and composition as close as possible.`;
@@ -128,10 +166,18 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
   const isStep1Complete = !!generatedImage;
   const isStep2Active = isStep1Complete;
-  const isStep2Complete = isStep1Complete;
+  const isStep2Complete = isStep1Complete && (!isCheckingReality && (!!realityCheckResults || !!realityCheckError || !project?.limitations || project.limitations.length === 0));;
   const isStep3Active = isStep2Complete;
   const isStep3Complete = submissionStatus === 'success';
   const isSubmitEnabled = isStep3Active && !!title.trim() && !!submissionDescription.trim() && !isSubmitting;
+
+  const getStatusIcon = (status: RealityCheckResult['status']) => {
+    switch (status) {
+      case 'Check': return <CircleCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />;
+      case 'Depending': return <CircleQuestionMark className="w-5 h-5 text-amber-600 flex-shrink-0" />;
+      case 'Violation': return <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />;
+    }
+  };
 
   return (
     <>
@@ -174,7 +220,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                             <p className="text-xs text-gray-500 mt-2">Be specific. Your description will guide the AI in generating the new vision.</p>
                           </div>
                           <button type="submit" disabled={!idea.trim() || isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
-                            {isGenerating ? (<><Loader2 className="w-5 h-5 animate-spin" /> Generating Vision...</>) : (<><Sparkles className="w-5 h-5" /> Generate Updated Vision</>)}
+                            {isGenerating ? (<>Generating Vision ...</>) : (<><Sparkles className="w-5 h-5" /> Generate Updated Vision</>)}
                           </button>
                         </form>
 
@@ -185,21 +231,33 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                     </Step>
 
                     <Step number={2} title="Reality Check" isLastStep={false} isComplete={isStep2Complete} isActive={isStep2Active}>
-                      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <CircleDotDashed className="w-6 h-6 text-gray-500"/>
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              Coming Soon
-                            </h3>
-                            <p className="text-gray-600 text-sm">
-                              AI-powered checks against project limitations will be available here.
-                            </p>
-                          </div>
+                      {isCheckingReality && (
+                        <div className="flex items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                          <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                          <p className="text-gray-600 text-sm">AI is checking your idea against project limitations...</p>
                         </div>
-                      </div>
+                      )}
+                      {realityCheckError && (
+                        <div className="p-6 bg-amber-50 border border-amber-200 rounded-xl">
+                          <p className="text-sm text-amber-800">{realityCheckError}</p>
+                        </div>
+                      )}
+                      {realityCheckResults && (
+                        <div className="space-y-3">
+                          {realityCheckResults.map((result, index) => (
+                            <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                              {getStatusIcon(result.status)}
+                              <p className="text-sm text-gray-700">{result.limitation}</p>
+                            </div>
+                          ))}
+                          <p className="text-xs text-gray-500 mt-2">Our AI reviewed your idea against the project’s limitations. This is just a suggestion, as you can still submit your idea.</p>
+                        </div>
+                      )}
+                      {isStep2Active && !isCheckingReality && !realityCheckResults && !realityCheckError && (!project?.limitations || project.limitations.length === 0) && (
+                        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                          <p className="text-gray-600 text-sm">This project has no specific limitations to check against.</p>
+                        </div>
+                      )}
                     </Step>
 
                     <Step number={3} title="Add Your Details" isLastStep={true} isComplete={isStep3Complete} isActive={isStep3Active}>
@@ -253,7 +311,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
               </div>
             </div>
         </main>
-        
+
         <Footer />
       </div>
 
