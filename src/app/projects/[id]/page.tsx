@@ -4,11 +4,10 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
 import { Footer } from '../../../components/footer';
-import { IdeaCard } from '../../../components/idea_card';
+import { IdeaList } from '../../../components/idea_list';
 import { getProjectStatus } from '../../../lib/utils';
 import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject, fetchIdeasForProject } from '../../../lib/supabase/queries.server';
 import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
-import { Idea } from '../../../types/idea';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();
@@ -146,14 +145,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
             {/* Idea List */}
             {ideas && ideas.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {ideas.map((idea: Idea) => (
-                    <IdeaCard key={idea.id} idea={idea} />
-                  ))}
-                </div>
-              </div>
+              <IdeaList ideas={ideas} ideaCount={ideaCount} />
             )}
             
             {/* Call to Action */}

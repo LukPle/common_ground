@@ -41,7 +41,7 @@ export const Header = () => {
             </Link>
 
             {/* Desktop Navigation - Visible on SM and up */}
-            <nav className="hidden sm:flex sm:space-x-4">
+            <nav className="hidden sm:flex sm:space-x-4 gap-4">
               <Link
                 href="/"
                 className={`text-sm font-medium transition-colors ${
