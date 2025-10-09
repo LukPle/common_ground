@@ -49,6 +49,25 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
   return data;
 }
 
+export async function fetchCompletedProjectsCount(): Promise<number> {
+  noStore();
+  const supabase = createServerClient();
+  
+  const now = new Date().toISOString();
+  
+  const { count, error } = await supabase
+    .from('projects')
+    .select('*', { count: 'exact', head: true })
+    .lt('deadline', now);
+
+  if (error) {
+    console.error('Database Error fetching completed projects count:', error.message);
+    return 0;
+  }
+
+  return count || 0;
+}
+
 export async function fetchIdeaCountForProject(projectReference: string): Promise<number> {
   noStore();
   const supabase = createServerClient();
@@ -118,4 +137,20 @@ export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId:
     id: item.project_reference,
     ideaId: String(item.id),
   }));
+}
+
+export async function fetchTotalIdeaCount(): Promise<number> {
+  noStore();
+  const supabase = createServerClient();
+  
+  const { count, error } = await supabase
+    .from('ideas')
+    .select('*', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('Database Error fetching total idea count:', error.message);
+    return 0;
+  }
+
+  return count || 0;
 }

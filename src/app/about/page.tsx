@@ -4,8 +4,17 @@ import { Header } from '../../components/header';
 import { Footer } from '../../components/footer';
 import { Users, Target, Lightbulb} from 'lucide-react';
 import { teamMembers } from '../../data/team_members';
+import { fetchTotalIdeaCount, fetchCompletedProjectsCount } from '../../lib/supabase/queries.server';
 
-export default function About() {
+export default async function About() {
+  const totalIdeasPromise = fetchTotalIdeaCount();
+  const completedProjectsPromise = fetchCompletedProjectsCount();
+
+  const [totalIdeas, completedProjects] = await Promise.all([
+    totalIdeasPromise,
+    completedProjectsPromise
+  ]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -75,11 +84,11 @@ export default function About() {
               
               <div className="grid grid-cols-2 gap-4 pt-6 border-t border-blue-500">
                 <div>
-                  <div className="text-3xl font-bold">0</div>
-                  <div className="text-sm text-blue-200">Active Citizens</div>
+                  <div className="text-3xl font-bold">{totalIdeas}</div>
+                  <div className="text-sm text-blue-200">Ideas Submitted</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold">0</div>
+                  <div className="text-3xl font-bold">{completedProjects}</div>
                   <div className="text-sm text-blue-200">Projects Completed</div>
                 </div>
               </div>
