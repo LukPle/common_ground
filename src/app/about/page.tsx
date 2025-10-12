@@ -39,14 +39,12 @@ export default async function About() {
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 mb-6">
-              We believe that the best communities are built when everyone comes together on common ground. 
-              Our platform bridges diverse perspectives, creating shared understanding and collaborative solutions 
-              for sustainable urban development.
+              Our mission is to bridge the gap between citizen ideas and urban planning by turning community ideas into actionable concepts.
             </p>
             <p className="text-lg text-gray-600 mb-8">
-              Through visual collaboration, AI-enhanced design tools, and inclusive planning processes, we're 
-              transforming how communities envision and create their shared future.
+              Leveraging AI-powered visual tools, we bring citizen ideas to life as engaging designs that drive collaboration and action, transforming how communities shape better, more inclusive cities.
             </p>
+
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex items-start space-x-3">

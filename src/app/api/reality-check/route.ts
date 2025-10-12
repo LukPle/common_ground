@@ -24,19 +24,30 @@ export async function POST(request: NextRequest) {
     Project Limitations:
     ${limitations.map(l => `- ${l}`).join('\n')}
 
-    For EACH limitation, determine if the user's idea complies. Your response MUST be a single JSON object with a key "results" which is an array. Each object in the array must have two string keys: "limitation" (the original limitation text) and "status".
+    For EACH limitation, determine if the user's idea complies. Your response MUST be a single JSON object with a key "results" which is an array. Each object in the array must have three string keys: "limitation", "status", and "reasoning".
 
     The "status" must be one of three exact strings:
     1. "Check": The idea clearly complies with the limitation.
     2. "Depending": It's unclear or could potentially conflict with the limitation; it requires human review.
     3. "Violation": The idea almost certainly violates the limitation.
 
+    The "reasoning" must be a concise, 1-2 sentence explanation for your status choice, written in simple terms.
+
     Example response format:
+   Example response format:
     \`\`\`json
     {
       "results": [
-        { "limitation": "Must not exceed a budget of $100,000.", "status": "Depending" },
-        { "limitation": "Must use sustainable materials.", "status": "Check" }
+        { 
+          "limitation": "Must not exceed a budget of $100,000.", 
+          "status": "Depending",
+          "reasoning": "The idea of a 'large water feature' could have significant costs. A detailed budget would be needed to confirm compliance."
+        },
+        { 
+          "limitation": "Must use sustainable materials.", 
+          "status": "Check",
+          "reasoning": "The user's suggestion to use 'reclaimed wood' aligns perfectly with the goal of using sustainable materials."
+        }
       ]
     }
     \`\`\`
@@ -72,7 +83,8 @@ export async function POST(request: NextRequest) {
     console.error("Error in reality-check endpoint:", error.message);
     const fallbackResults = limitations.map((limitation: string) => ({
       limitation,
-      status: 'Depending'
+      status: 'Depending',
+      reasoning: 'The AI analysis could not be completed. Please review this limitation manually.' 
     }));
 
     return NextResponse.json({ 

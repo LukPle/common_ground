@@ -4,15 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, CircleCheck, XCircle, CircleQuestionMark, ArrowRight } from 'lucide-react';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight } from 'lucide-react';
 import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
+import { LimitationCheck } from '../../../../types/limitation_check';
+import { LimitationCheckCard } from '../../../../components/limitation_check_card';
 import { Step } from '../../../../components/step';
-
-type RealityCheckResult = {
-  limitation: string;
-  status: 'Check' | 'Depending' | 'Violation';
-};
 
 export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
   const [idea, setIdea] = useState('');
@@ -21,7 +18,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const [generationError, setGenerationError] = useState<string | null>(null);
 
   const [isCheckingReality, setIsCheckingReality] = useState(false);
-  const [realityCheckResults, setRealityCheckResults] = useState<RealityCheckResult[] | null>(null);
+  const [realityCheckResults, setRealityCheckResults] = useState<LimitationCheck[] | null>(null);
   const [realityCheckError, setRealityCheckError] = useState<string | null>(null);
 
   const [title, setTitle] = useState('');
@@ -171,14 +168,6 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const isStep3Complete = submissionStatus === 'success';
   const isSubmitEnabled = isStep3Active && !!title.trim() && !!submissionDescription.trim() && !isSubmitting;
 
-  const getStatusIcon = (status: RealityCheckResult['status']) => {
-    switch (status) {
-      case 'Check': return <CircleCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />;
-      case 'Depending': return <CircleQuestionMark className="w-5 h-5 text-amber-600 flex-shrink-0" />;
-      case 'Violation': return <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />;
-    }
-  };
-
   return (
     <>
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -245,10 +234,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                       {realityCheckResults && (
                         <div className="space-y-3">
                           {realityCheckResults.map((result, index) => (
-                            <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
-                              {getStatusIcon(result.status)}
-                              <p className="text-sm text-gray-700">{result.limitation}</p>
-                            </div>
+                            <LimitationCheckCard key={index} result={result} />
                           ))}
                           <p className="text-xs text-gray-500 mt-2">Our AI reviewed your idea against the project’s limitations. This is just a suggestion, as you can still submit your idea.</p>
                         </div>

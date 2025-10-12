@@ -8,6 +8,8 @@ import { fetchProjects } from '../lib/supabase/queries.server';
 
 export default async function Home() {
   const projects = await fetchProjects();
+  const now = new Date();
+  const activeProjects = projects.filter(project => new Date(project.deadline) >= now);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -27,7 +29,7 @@ export default async function Home() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map(project => (
+          {activeProjects.map(project => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
