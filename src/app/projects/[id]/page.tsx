@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../components/header';
+import { Breadcrumbs } from '../../../components/breadcrumbs';
 import { Footer } from '../../../components/footer';
 import { IdeaList } from '../../../components/idea_list';
 import { getProjectStatus } from '../../../lib/utils';
@@ -37,30 +38,15 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   const status = getProjectStatus(project.deadline);
 
+  const breadcrumbItems = [
+    { label: 'Projects', href: '/' },
+    { label: project.title },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
-      {/* Breadcrumbs Section */}
-      <div className="bg-white border-b border-gray-200">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <ol className="flex items-center space-x-2 text-sm text-gray-500">
-            <li>
-              <Link href="/" className="hover:text-gray-900 transition-colors">
-                Projects
-              </Link>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
-                <span className="ml-2 font-medium text-gray-800 truncate" title={project.title}>
-                  {project.title}
-                </span>
-              </div>
-            </li>
-          </ol>
-        </nav>
-      </div>
+      <Breadcrumbs items={breadcrumbItems} />
 
       {/* Hero Section */}
       <div className="relative h-[60vh] min-h-[400px] overflow-hidden">

@@ -1,11 +1,11 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Header } from '../../../../../components/header';
+import { Breadcrumbs } from '../../../../../components/breadcrumbs';
 import { Footer } from '../../../../../components/footer';
 import { fetchIdeaById, fetchAllProjectAndIdeaIds, fetchProjectById } from '../../../../../lib/supabase/queries.server';
-import { ChevronRight, Calendar, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 export async function generateStaticParams() {
   const ids = await fetchAllProjectAndIdeaIds();
@@ -22,40 +22,17 @@ export default async function IdeaDetailPage({ params }: { params: { id: string;
     notFound();
   }
 
+  const breadcrumbItems = [
+    { label: 'Projects', href: '/' },
+    { label: project.title, href: `/projects/${project.reference}` },
+    { label: idea.title },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <div className="bg-white border-b border-gray-200">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <ol className="flex items-center space-x-2 text-sm text-gray-500">
-            <li>
-              <Link href="/" className="hover:text-gray-900 transition-colors">
-                Projects
-              </Link>
-            </li>
-            <li>
-            <div className="flex items-center">
-                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
-                <Link 
-                  href={`/projects/${project.reference}`}
-                  className="ml-2 hover:text-gray-900 transition-colors"
-                >
-                  {project.title}
-                </Link>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />
-                <span className="ml-2 font-medium text-gray-800 truncate" title="Ideation">
-                  {idea.title}
-                </span>
-              </div>
-            </li>
-          </ol>
-        </nav>
-      </div>
+      <Breadcrumbs items={breadcrumbItems} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
