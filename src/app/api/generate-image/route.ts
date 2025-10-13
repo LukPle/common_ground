@@ -64,18 +64,28 @@ export async function POST(request: NextRequest) {
 
     console.log('Sending request to Gemini...');
 
-    const result = await genAI.models.generateContent({
+    const responseStream = await genAI.models.generateContentStream({
       model,
       contents,
     });
 
-    const inlineData = result.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+    let generatedImageBase64: string | null = null;
+    let generatedMimeType: string | null = null;
 
-    if (!inlineData?.data || !inlineData?.mimeType) {
-      throw new Error('No image data was generated in the response, possibly due to safety settings or an invalid prompt.');
+    for await (const chunk of responseStream) {
+      const inlineData = chunk.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+      if (inlineData) {
+        generatedImageBase64 = inlineData.data || null;
+        generatedMimeType = inlineData.mimeType || 'image/png';
+        break;
+      }
     }
 
-    const imageUrl = `data:${inlineData.mimeType};base64,${inlineData.data}`;
+    if (!generatedImageBase64 || !generatedMimeType) {
+      throw new Error('No image data was generated in the response, possibly due to safety settings or a server timeout.');
+    }
+
+    const imageUrl = `data:${generatedMimeType};base64,${generatedImageBase64}`;
 
     console.log('Successfully generated image as Data URL.');
       
