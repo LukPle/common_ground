@@ -8,7 +8,7 @@ import { Footer } from '../../../components/footer';
 import { IdeaList } from '../../../components/idea_list';
 import { getProjectStatus } from '../../../lib/utils';
 import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject, fetchIdeasForProject } from '../../../lib/supabase/queries.server';
-import { ArrowRight, Check, ChevronRight, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
+import { ArrowRight, Check, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();

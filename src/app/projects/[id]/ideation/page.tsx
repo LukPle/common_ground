@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Header } from '../../../../components/header';
 import { Breadcrumbs } from '../../../../components/breadcrumbs';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, ChevronRight, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight } from 'lucide-react';
+import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight } from 'lucide-react';
 import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
 import { Project } from '../../../../types/project';
 import { LimitationCheck } from '../../../../types/limitation_check';
@@ -54,31 +54,46 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     getProjectData();
   }, [params.id]);
 
-
   useEffect(() => {
-    if (generatedImage && project?.limitations && project.limitations.length > 0) {
-      const performRealityCheck = async () => {
+    if (generatedImage && project) {
+      const performAnalysis = async () => {
         setIsCheckingReality(true);
         setRealityCheckError(null);
         setRealityCheckResults(null);
+        setTitle('');
+        setSubmissionDescription('');
+
         try {
-          const response = await fetch('/api/reality-check', {
+          const response = await fetch('/api/analyze-idea', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: idea, limitations: project.limitations }),
+            body: JSON.stringify({ 
+              prompt: idea, 
+              limitations: project.limitations || [],
+              projectTitle: project.title,
+              projectDescription: project.short_description
+            }),
           });
+
           const data = await response.json();
-          if (!response.ok) {
-            throw new Error(data.error || 'The reality check failed.');
+          if (!response.ok || data.error) {
+            throw new Error(data.error || 'The AI analysis failed.');
           }
-          setRealityCheckResults(data.results);
+
+          setRealityCheckResults(data.realityCheckResults);
+          setTitle(data.suggestedTitle);
+          setSubmissionDescription(data.suggestedDescription);
+
         } catch (error: any) {
           setRealityCheckError(error.message);
+          setTitle('A new vision for ' + project.title);
+          setSubmissionDescription(idea);
         } finally {
           setIsCheckingReality(false);
         }
       };
-      performRealityCheck();
+      
+      performAnalysis();
     }
   }, [generatedImage, project, idea]);
 
@@ -106,27 +121,8 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       if (!response.ok || data.error) {
         throw new Error(data.message || 'Failed to generate image. Please try again or adjust your prompt.');
       }
+      
       setGeneratedImage(data.imageUrl);
-
-      try {
-        const suggestionResponse = await fetch('/api/generate-details', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: idea }),
-        });
-
-        if (suggestionResponse.ok) {
-          const suggestionData = await suggestionResponse.json();
-          setTitle(suggestionData.suggestedTitle);
-          setSubmissionDescription(suggestionData.suggestedDescription);
-        } else {
-          throw new Error("Failed to get AI suggestions.");
-        }
-      } catch (suggestionError) {
-        console.error("Could not fetch suggestions, using fallback:", suggestionError);
-        setTitle('A new vision for ' + project.title);
-        setSubmissionDescription(idea);
-      }
 
     } catch (err: any) {
       setGenerationError(err.message || 'An unknown error occurred.');
