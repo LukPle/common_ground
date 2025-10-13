@@ -1,6 +1,6 @@
-import { createClient as createBrowserClient } from './client';
-import { Project } from '../../types/project';
 import { NewIdea } from '../../types/idea';
+import { Project } from '../../types/project';
+import { createClient as createBrowserClient } from './client';
 
 export async function fetchProjectByIdClient(id: string): Promise<Project | null> {
   const supabase = createBrowserClient();
@@ -28,6 +28,6 @@ export async function createIdea(newIdea: NewIdea): Promise<{ data: any; error: 
   if (error) {
     console.error('Error creating idea:', error.message);
   }
-  
+
   return { data, error };
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
+import { NextRequest, NextResponse } from 'next/server';
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!apiKey) {
       throw new Error("Server is missing GEMINI_API_KEY configuration.");
     }
-    
+
     const { prompt, originalImage } = await request.json();
 
     if (!prompt) {
@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
     Remember: This is an ENHANCEMENT of the provided image, not a new creation from scratch.`;
 
     const model = 'gemini-2.5-flash-image';
-      
+
     const parts: any[] = [];
-      
+
     if (originalImage) {
-      const imageUrl = originalImage.startsWith('/') 
-        ? new URL(originalImage, process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000') 
+      const imageUrl = originalImage.startsWith('/')
+        ? new URL(originalImage, process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
         : new URL(originalImage);
 
       console.log(`Fetching original image from: ${imageUrl}`);
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
       if (!imageResponse.ok) {
         throw new Error(`Failed to fetch original image: ${imageResponse.statusText}`);
       }
-        
+
       const imageBuffer = await imageResponse.arrayBuffer();
       const imageData = Buffer.from(imageBuffer).toString('base64');
       const mimeType = imageResponse.headers.get('content-type') || 'image/jpeg';
-        
+
       parts.push({ inlineData: { mimeType, data: imageData } });
     }
-      
+
     parts.push({ text: enhancedPrompt });
 
     const contents = [{ role: 'user', parts }];
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     const imageUrl = `data:${generatedMimeType};base64,${generatedImageBase64}`;
 
     console.log('Successfully generated image as Data URL.');
-      
+
     return NextResponse.json({
       imageUrl: imageUrl,
       message: `Image generated successfully.`
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error in image generation endpoint:', error.message);
-    
+
     return NextResponse.json({
       message: `Image generation failed: ${error.message}`,
       error: 'API_ERROR'

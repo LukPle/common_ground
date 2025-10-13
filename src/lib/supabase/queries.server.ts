@@ -1,8 +1,8 @@
-import { createClient as createServerClient } from './server';
-import { Project } from '../../types/project';
-import { Idea } from '../../types/idea';
-import { unstable_noStore as noStore } from 'next/cache';
 import { createServerClient as createClientForBuild } from '@supabase/ssr';
+import { unstable_noStore as noStore } from 'next/cache';
+import { Idea } from '../../types/idea';
+import { Project } from '../../types/project';
+import { createClient as createServerClient } from './server';
 
 export async function fetchProjects(): Promise<Project[]> {
   noStore();
@@ -11,7 +11,7 @@ export async function fetchProjects(): Promise<Project[]> {
 
   if (error) {
     console.error('Database Error:', error.message);
-    return []; 
+    return [];
   }
   return projects || [];
 }
@@ -32,7 +32,7 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
   const supabase = createClientForBuild(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { 
+    {
       cookies: {
         get() { return undefined; },
         set() { /* Do nothing */ },
@@ -52,9 +52,9 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
 export async function fetchCompletedProjectsCount(): Promise<number> {
   noStore();
   const supabase = createServerClient();
-  
+
   const now = new Date().toISOString();
-  
+
   const { count, error } = await supabase
     .from('projects')
     .select('*', { count: 'exact', head: true })
@@ -71,7 +71,7 @@ export async function fetchCompletedProjectsCount(): Promise<number> {
 export async function fetchIdeaCountForProject(projectReference: string): Promise<number> {
   noStore();
   const supabase = createServerClient();
-  
+
   const { count, error } = await supabase
     .from('ideas')
     .select('*', { count: 'exact', head: true })
@@ -121,7 +121,7 @@ export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId:
   const supabase = createClientForBuild(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { get() { return undefined; }, set() {}, remove() {} } }
+    { cookies: { get() { return undefined; }, set() { }, remove() { } } }
   );
 
   const { data, error } = await supabase
@@ -132,7 +132,7 @@ export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId:
     console.error('Database Error during build (fetchAllProjectAndIdeaIds):', error.message);
     return [];
   }
-  
+
   return data.map(item => ({
     id: item.project_reference,
     ideaId: String(item.id),
@@ -142,7 +142,7 @@ export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId:
 export async function fetchTotalIdeaCount(): Promise<number> {
   noStore();
   const supabase = createServerClient();
-  
+
   const { count, error } = await supabase
     .from('ideas')
     .select('*', { count: 'exact', head: true });

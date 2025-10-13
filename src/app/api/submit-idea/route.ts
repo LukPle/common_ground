@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '../../../types/supabase';
+import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
+import { Database } from '../../../types/supabase';
 
 type NewIdea = Database['public']['Tables']['ideas']['Insert'];
 
@@ -15,12 +15,12 @@ interface SubmitIdeaRequestBody {
 
 export async function POST(request: NextRequest) {
   try {
-    const { 
-      title, 
-      description, 
-      generatedImage, 
-      project_reference, 
-      user_id 
+    const {
+      title,
+      description,
+      generatedImage,
+      project_reference,
+      user_id
     }: SubmitIdeaRequestBody = await request.json();
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     const base64Data = generatedImage.split(';base64,').pop();
     if (!base64Data) throw new Error("Invalid image data format.");
-    
+
     const initialBuffer = Buffer.from(base64Data, 'base64');
 
     console.log(`Optimizing image... Original size: ${Math.round(initialBuffer.length / 1024)} KB`);

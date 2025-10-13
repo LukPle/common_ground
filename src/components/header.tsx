@@ -1,9 +1,9 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export const Header = () => {
   const pathname = usePathname();
@@ -44,21 +44,19 @@ export const Header = () => {
             <nav className="hidden sm:flex sm:space-x-4 gap-4">
               <Link
                 href="/"
-                className={`text-sm font-medium transition-colors ${
-                  pathname === '/'
+                className={`text-sm font-medium transition-colors ${pathname === '/'
                     ? 'text-blue-600'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 Projects
               </Link>
               <Link
                 href="/about"
-                className={`text-sm font-medium transition-colors ${
-                  pathname === '/about'
+                className={`text-sm font-medium transition-colors ${pathname === '/about'
                     ? 'text-blue-600'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 About
               </Link>
@@ -80,9 +78,8 @@ export const Header = () => {
 
       {/* Mobile Menu Overlay - Only active below SM */}
       <div
-        className={`fixed inset-0 z-50 bg-white transition-opacity duration-300 ease-in-out sm:hidden ${
-          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
+        className={`fixed inset-0 z-50 bg-white transition-opacity duration-300 ease-in-out sm:hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
       >
         <button
           onClick={() => setIsMenuOpen(false)}
@@ -95,18 +92,16 @@ export const Header = () => {
           <Link
             href="/"
             onClick={() => setIsMenuOpen(false)}
-            className={`text-3xl font-bold transition-colors ${
-              pathname === '/' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
-            }`}
+            className={`text-3xl font-bold transition-colors ${pathname === '/' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
+              }`}
           >
             Projects
           </Link>
           <Link
             href="/about"
             onClick={() => setIsMenuOpen(false)}
-            className={`text-3xl font-bold transition-colors ${
-              pathname === '/about' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
-            }`}
+            className={`text-3xl font-bold transition-colors ${pathname === '/about' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
+              }`}
           >
             About
           </Link>

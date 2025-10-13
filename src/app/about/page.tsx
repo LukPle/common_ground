@@ -1,10 +1,9 @@
-import React from 'react';
+import { Lightbulb, Target, Users } from 'lucide-react';
 import Image from 'next/image';
-import { Header } from '../../components/header';
 import { Footer } from '../../components/footer';
-import { Users, Target, Lightbulb} from 'lucide-react';
+import { Header } from '../../components/header';
 import { teamMembers } from '../../data/team_members';
-import { fetchTotalIdeaCount, fetchCompletedProjectsCount } from '../../lib/supabase/queries.server';
+import { fetchCompletedProjectsCount, fetchTotalIdeaCount } from '../../lib/supabase/queries.server';
 
 export default async function About() {
   const totalIdeasPromise = fetchTotalIdeaCount();
@@ -18,7 +17,7 @@ export default async function About() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +44,6 @@ export default async function About() {
               Leveraging AI-powered visual tools, we bring citizen ideas to life as engaging designs that drive collaboration and action, transforming how communities shape better, more inclusive cities.
             </p>
 
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex items-start space-x-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -56,7 +54,7 @@ export default async function About() {
                   <p className="text-sm text-gray-600">Ensuring every voice is heard and valued</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Target className="w-5 h-5 text-indigo-600" />
@@ -68,18 +66,18 @@ export default async function About() {
               </div>
             </div>
           </div>
-          
+
           <div className="relative">
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-8 text-white">
               <div className="mb-6">
                 <Lightbulb className="w-12 h-12 text-blue-200 mb-4" />
                 <h3 className="text-2xl font-bold mb-2">Making Change Happen</h3>
                 <p className="text-blue-100">
-                  From neighborhood improvements to city-wide initiatives, we provide the tools 
+                  From neighborhood improvements to city-wide initiatives, we provide the tools
                   and platform for citizens to collaborate with local government effectively.
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 pt-6 border-t border-blue-500">
                 <div>
                   <div className="text-3xl font-bold">{totalIdeas}</div>
@@ -104,14 +102,14 @@ export default async function About() {
               Passionate professionals dedicated to empowering communities and fostering meaningful civic engagement
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
               <div key={index} className="bg-white rounded-2xl p-6 overflow-hidden shadow border border-gray-100">
                 <div className="text-center">
                   <div className="w-24 h-24 mx-auto mb-4 relative">
-                    <Image 
-                      src={`/${member.image}`} 
+                    <Image
+                      src={`/${member.image}`}
                       alt={member.name}
                       width={96}
                       height={96}
@@ -127,7 +125,7 @@ export default async function About() {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

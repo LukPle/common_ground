@@ -1,14 +1,13 @@
-import React from 'react';
-import Link from 'next/link';
+import { ArrowRight, Check, Clock, Lightbulb, TrendingUp, Users } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Header } from '../../../components/header';
 import { Breadcrumbs } from '../../../components/breadcrumbs';
 import { Footer } from '../../../components/footer';
+import { Header } from '../../../components/header';
 import { IdeaList } from '../../../components/idea_list';
+import { fetchIdeaCountForProject, fetchIdeasForProject, fetchProjectById, fetchProjectIds } from '../../../lib/supabase/queries.server';
 import { getProjectStatus } from '../../../lib/utils';
-import { fetchProjectById, fetchProjectIds, fetchIdeaCountForProject, fetchIdeasForProject } from '../../../lib/supabase/queries.server';
-import { ArrowRight, Check, Users, Clock, TrendingUp, Lightbulb } from 'lucide-react';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();
@@ -50,15 +49,15 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       {/* Hero Section */}
       <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
-        <Image 
-          src={project.image} 
+        <Image
+          src={project.image}
           alt={project.title}
           fill
           className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
-        
+
         <div className="absolute inset-0 flex flex-col justify-end pb-16">
           <div className="text-white max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto w-full">
             <span className="bg-white/20 backdrop-blur-2xl border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
@@ -77,7 +76,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 divide-y divide-gray-200">
-          
+
           {/* At-a-Glance Info Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3">
             <div className="py-6 px-8 sm:px-10 flex items-center gap-4">
@@ -97,14 +96,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               </div>
             </div>
             <div className="p-6 flex items-center gap-4">
-               <TrendingUp className="w-8 h-8 text-blue-600" />
+              <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-500">Community Input</p>
                 <p className="text-lg font-semibold text-gray-900">{ideaCount} ideas submitted</p>
               </div>
             </div>
           </div>
-          
+
           <div className="p-8 sm:p-10 space-y-10">
             {/* Full Description */}
             <div>
@@ -133,7 +132,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             {ideas && ideas.length > 0 && (
               <IdeaList ideas={ideas} ideaCount={ideaCount} />
             )}
-            
+
             {/* Call to Action */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
               <Lightbulb className="w-10 h-10 text-blue-600 mx-auto mb-3" />

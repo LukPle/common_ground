@@ -1,11 +1,10 @@
-import React from 'react';
+import { MegaphoneOff } from 'lucide-react';
+import { Footer } from '../components/footer';
 import { Header } from '../components/header';
 import { Hero } from '../components/hero';
 import { HowTo } from '../components/how_to';
 import { ProjectCard } from '../components/project_card';
-import { Footer } from '../components/footer';
 import { fetchProjects } from '../lib/supabase/queries.server';
-import { MegaphoneOff } from 'lucide-react';
 
 export default async function Home() {
   const projects = await fetchProjects();
@@ -28,7 +27,7 @@ export default async function Home() {
             Discover ongoing initiatives and contribute your ideas.
           </p>
         </div>
-        
+
         {activeProjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {activeProjects.map(project => (

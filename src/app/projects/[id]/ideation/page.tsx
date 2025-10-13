@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { ArrowRight, CircleCheckBig, Image as ImageIcon, Lightbulb, Loader2, RotateCw, Send, Sparkles, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
-import { Header } from '../../../../components/header';
+import React, { useEffect, useState } from 'react';
 import { Breadcrumbs } from '../../../../components/breadcrumbs';
 import { Footer } from '../../../../components/footer';
-import { Lightbulb, Loader2, Image as ImageIcon, Sparkles, Send, TriangleAlert, RotateCw, X, CircleCheckBig, ArrowRight } from 'lucide-react';
-import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
-import { Project } from '../../../../types/project';
-import { LimitationCheck } from '../../../../types/limitation_check';
+import { Header } from '../../../../components/header';
 import { LimitationCheckCard } from '../../../../components/limitation_check_card';
 import { Step } from '../../../../components/step';
+import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client';
+import { LimitationCheck } from '../../../../types/limitation_check';
+import { Project } from '../../../../types/project';
 
 export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
   const [idea, setIdea] = useState('');
@@ -30,7 +30,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
-  
+
   const [modalImageSrc, setModalImageSrc] = useState<string | null>(null);
 
   const breadcrumbItems = project ? [
@@ -43,7 +43,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     const getProjectData = async () => {
       setIsLoading(true);
       const fetchedProject = await fetchProjectByIdClient(params.id);
-      
+
       if (!fetchedProject) {
         setPageError('Project not found. It may have been moved or deleted.');
       } else {
@@ -67,8 +67,8 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
           const response = await fetch('/api/analyze-idea', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              prompt: idea, 
+            body: JSON.stringify({
+              prompt: idea,
               limitations: project.limitations || [],
               projectTitle: project.title,
               projectDescription: project.short_description
@@ -92,7 +92,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
           setIsCheckingReality(false);
         }
       };
-      
+
       performAnalysis();
     }
   }, [generatedImage, project, idea]);
@@ -110,7 +110,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
     try {
       const prompt = `${idea}. Enhance this ${project.title} design by integrating these improvements while maintaining the original architectural character and composition as close as possible.`;
-      
+
       const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -121,7 +121,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       if (!response.ok || data.error) {
         throw new Error(data.message || 'Failed to generate image. Please try again or adjust your prompt.');
       }
-      
+
       setGeneratedImage(data.imageUrl);
 
     } catch (err: any) {
@@ -175,14 +175,14 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     <>
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Header />
-        
+
         <main className="flex-grow">
           {project && <Breadcrumbs items={breadcrumbItems} />}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 sm:p-10">
               <div className="max-w-4xl mx-auto">
-                
+
                 <div className="text-center mb-16">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"><Lightbulb className="w-8 h-8 text-blue-600" /></div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">Enhance the Design</h1>
@@ -196,7 +196,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><ImageIcon className="w-5 h-5 text-gray-500" />Original Design</h3>
                         <div className="relative rounded-xl overflow-hidden shadow-md border border-gray-200 cursor-pointer" onClick={() => openModal(project.image!)}><div className="aspect-[16/10] w-full"><img src={project.image!} alt={project.title} className="w-full h-full object-cover" /></div></div>
                       </div>
-                      
+
                       <form onSubmit={handleGenerateVision}>
                         <div>
                           <label htmlFor="idea" className="block text-sm font-medium text-gray-700 mb-2">Describe Your Enhancement</label>
@@ -265,7 +265,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                     {submissionStatus === 'success' && (
                       <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center">
                         <CircleCheckBig className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
-                        
+
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Thank you!</h3>
                         <p className="text-gray-600 mb-6 max-w-md mx-auto">
                           Your idea has been successfully submitted and is now visible on the project page.
@@ -297,20 +297,20 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       </div>
 
       {modalImageSrc && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2 sm:p-4"
           onClick={closeModal}
         >
-          <button 
+          <button
             onClick={closeModal}
             className="absolute right-4 top-6 sm:top-6 sm:right-8 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 z-50 transition-colors"
             aria-label="Close image view"
           >
             <X className="w-6 h-6" />
           </button>
-          
+
           <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
-            <img 
+            <img
               src={modalImageSrc}
               alt="Fullscreen view"
               className="block max-w-[95vw] max-h-[75vh] object-contain rounded-lg shadow-2xl"

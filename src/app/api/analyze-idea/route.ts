@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
+import { NextRequest, NextResponse } from 'next/server';
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -17,8 +17,8 @@ export async function POST(request: NextRequest) {
     if (!prompt || !limitations || !Array.isArray(limitations) || !projectTitle || !projectDescription) {
       return NextResponse.json({ error: 'Prompt, limitations, projectTitle, and projectDescription are required' }, { status: 400 });
     }
-    
-    const genAI = new GoogleGenAI({ apiKey }); 
+
+    const genAI = new GoogleGenAI({ apiKey });
 
     const combinedAnalysisPrompt = `You are an AI assistant for a civic engagement platform focused on real-world urban planning. The user's ideas are proposals for PHYSICAL changes to a location like a park, building, or public space.
     
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       model,
       contents,
     });
-    
+
     const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!rawText) {
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     const jsonMatch = rawText.match(/```json\n([\s\S]*?)\n```/);
     const jsonString = jsonMatch ? jsonMatch[1] : rawText.trim();
-    
+
     const parsedData = JSON.parse(jsonString);
 
     if (!parsedData.title || !parsedData.description || !parsedData.realityCheck) {
@@ -96,20 +96,20 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error("Error in analyze-idea endpoint:", error.message);
-    
+
     const body = await request.json().catch(() => ({ prompt: '', limitations: [] }));
-    
+
     const fallbackResults = body.limitations.map((limitation: string) => ({
       limitation,
       status: 'Depending',
       reasoning: 'The AI analysis could not be completed. Please review this limitation manually.'
     }));
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       suggestedTitle: 'A New Vision',
       suggestedDescription: body.prompt,
       realityCheckResults: fallbackResults,
-      error: `Failed to analyze idea: ${error.message}` 
+      error: `Failed to analyze idea: ${error.message}`
     }, { status: 500 });
   }
 }

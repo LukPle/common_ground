@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 type BreadcrumbItem = {
   label: string;
@@ -25,7 +25,7 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
       if (!element) return;
 
       const { scrollLeft, scrollWidth, clientWidth } = element;
-      
+
       setShowLeftFade(scrollLeft > 0);
       setShowRightFade(scrollLeft < scrollWidth - clientWidth);
     };
@@ -44,25 +44,25 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
   return (
     <div className="bg-white border-b border-gray-200">
       <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        
+
         {/* Left Scroll */}
-        <div 
+        <div
           className={`absolute top-0 left-2 bottom-0 w-16 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-300
-            ${showLeftFade ? 'opacity-100' : 'opacity-0'}`}/>
+            ${showLeftFade ? 'opacity-100' : 'opacity-0'}`} />
 
         <div className="flex items-center overflow-hidden pt-1">
-          <ol 
+          <ol
             ref={scrollContainerRef}
             className="flex items-center space-x-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap pb-2
               [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            
+
             {items.map((item, index) => {
               const isLast = index === items.length - 1;
 
               return (
                 <li key={index} className="flex items-center">
                   {index > 0 && <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-400" />}
-                  
+
                   {isLast ? (
                     <span className={`ml-2 font-medium text-gray-800 truncate`} title={item.label}>
                       {item.label}
@@ -80,9 +80,9 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
         </div>
 
         {/* Right Scroll */}
-        <div 
+        <div
           className={`absolute top-0 right-4 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none transition-opacity duration-300
-            ${showRightFade ? 'opacity-100' : 'opacity-0'}`}/>
+            ${showRightFade ? 'opacity-100' : 'opacity-0'}`} />
 
       </nav>
     </div>

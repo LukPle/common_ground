@@ -1,4 +1,3 @@
-import React from 'react';
 import { Github } from 'lucide-react';
 
 export const Footer = () => {
@@ -9,7 +8,7 @@ export const Footer = () => {
           <p className="text-sm text-center sm:text-left text-gray-500 font-medium">
             &copy; 2025. Common Ground. Collaborative Citizen Participation.
           </p>
-          
+
           <a
             href="https://github.com/LukPle/common_ground"
             target="_blank"
