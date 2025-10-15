@@ -74,16 +74,25 @@ export async function POST(request: NextRequest) {
       user_id,
     };
 
-    const { error: insertError } = await supabaseAdmin
+    const { data: newIdea, error: insertError } = await supabaseAdmin
       .from('ideas')
-      .insert(newIdeaForDb);
+      .insert(newIdeaForDb)
+      .select('id')
+      .single();
 
     if (insertError) {
       throw new Error(`Database insert failed: ${insertError.message}`);
     }
 
-    console.log('Successfully saved idea to database.');
-    return NextResponse.json({ message: "Idea submitted successfully!" }, { status: 200 });
+    if (!newIdea) {
+      throw new Error("Failed to retrieve the new idea's ID after insertion.");
+    }
+
+    console.log('Successfully saved idea to database with ID:', newIdea.id);
+    return NextResponse.json({
+      message: "Idea submitted successfully!",
+      ideaId: newIdea.id
+    }, { status: 200 });
 
   } catch (error: any) {
     console.error('Error in /api/submit-idea:', error);

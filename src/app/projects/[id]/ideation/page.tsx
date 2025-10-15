@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ChevronDown, CircleCheckBig, ImageIcon, Lightbulb, Loader2, RotateCw, Send, Sparkles, TriangleAlert, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, CircleCheck, CircleCheckBig, ImageIcon, Lightbulb, Loader2, RotateCw, Send, Share2, Sparkles, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Breadcrumbs } from '../../../../components/breadcrumbs';
@@ -36,6 +36,9 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
+
+  const [newIdeaId, setNewIdeaId] = useState<number | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const [modalImageSrc, setModalImageSrc] = useState<string | null>(null);
 
@@ -178,11 +181,13 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
         body: JSON.stringify({ title, description: submissionDescription, generatedImage, project_reference: project.reference, user_id: userId }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit idea.');
+        throw new Error(data.error || 'Failed to submit idea.');
       }
 
+      setNewIdeaId(data.ideaId);
       setSubmissionStatus('success');
     } catch (err: any) {
       console.error("Submission failed", err);
@@ -191,6 +196,18 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleShare = () => {
+    if (!project || !newIdeaId) return;
+
+    const shareUrl = `${window.location.origin}/projects/${project.reference}/ideas/${newIdeaId}`;
+
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopySuccess(true);
+    }).catch(err => {
+      console.error('Failed to copy link:', err);
+    });
   };
 
   const openModal = (imageUrl: string) => setModalImageSrc(imageUrl);
@@ -252,7 +269,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                                 onChange={(e) => setBaseImage(e.target.value as 'original' | 'last')}
                                 className="appearance-none h-full w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                               >
-                                <option value="original">From Original</option>
+                                <option value="original">From Original Image</option>
                                 <option value="last">From Last Generation</option>
                               </select>
                               <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -346,18 +363,38 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                     {submissionStatus === 'success' && (
                       <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center">
                         <CircleCheckBig className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
-
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Thank you!</h3>
                         <p className="text-gray-600 mb-6 max-w-md mx-auto">
                           Your idea has been successfully submitted and is now visible on the project page.
                         </p>
-
-                        <Link href={`/projects/${project.reference}`}>
-                          <span className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-flex items-center gap-2">
-                            View Project Details
-                            <ArrowRight className="w-5 h-5" />
-                          </span>
-                        </Link>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                          <Link href={`/projects/${project.reference}`}>
+                            <span className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-flex items-center gap-2">
+                              View Project Page
+                              <ArrowRight className="w-5 h-5" />
+                            </span>
+                          </Link>
+                          <button
+                            onClick={handleShare}
+                            className={`bg-white px-6 py-3 rounded-lg font-semibold transition-all shadow-sm border inline-flex items-center gap-2
+                                      ${copySuccess
+                                ? 'border-emerald-200 text-emerald-700'
+                                : 'text-gray-800 border-gray-200 hover:bg-gray-100'
+                              }`}
+                          >
+                            {copySuccess ? (
+                              <>
+                                <CircleCheck className="w-5 h-5" />
+                                Copied to clipboard!
+                              </>
+                            ) : (
+                              <>
+                                <Share2 className="w-5 h-5" />
+                                Share Your Idea
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     )}
                     {submissionStatus === 'error' && !moderationIssue && (

@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
                 console.warn(`Content flagged for ${attribute} with score ${score.toFixed(2)} (Threshold: ${threshold})`);
                 return NextResponse.json({
                     isSafe: false,
-                    reason: `Your idea could not be submitted. The content may have violated our community guidelines regarding "${attribute.toLowerCase().replace(/_/g, ' ')}". Please revise your text.`
+                    reason: `Your idea could not be submitted. The content may have violated our community guidelines regarding "${attribute.toLowerCase().replace(/_/g, ' ')}". Please revise your text and try again.`
                 }, { status: 400 });
             }
         }
