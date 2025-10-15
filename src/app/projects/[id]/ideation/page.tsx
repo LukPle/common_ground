@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, CircleCheckBig, Image as ImageIcon, Lightbulb, Loader2, RotateCw, Send, Sparkles, TriangleAlert, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, CircleCheckBig, ImageIcon, Lightbulb, Loader2, RotateCw, Send, Sparkles, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Breadcrumbs } from '../../../../components/breadcrumbs';
@@ -17,6 +17,10 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
+
+  const [promptHistory, setPromptHistory] = useState<string[]>([]);
+  const [baseImage, setBaseImage] = useState<'original' | 'last'>('original');
+  const [showBaseSelector, setShowBaseSelector] = useState(false);
 
   const [isCheckingReality, setIsCheckingReality] = useState(false);
   const [realityCheckResults, setRealityCheckResults] = useState<LimitationCheck[] | null>(null);
@@ -56,49 +60,6 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     getProjectData();
   }, [params.id]);
 
-  useEffect(() => {
-    if (generatedImage && project) {
-      const performAnalysis = async () => {
-        setIsCheckingReality(true);
-        setRealityCheckError(null);
-        setRealityCheckResults(null);
-        setTitle('');
-        setSubmissionDescription('');
-
-        try {
-          const response = await fetch('/api/analyze-idea', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              prompt: idea,
-              limitations: project.limitations || [],
-              projectTitle: project.title,
-              projectDescription: project.short_description
-            }),
-          });
-
-          const data = await response.json();
-          if (!response.ok || data.error) {
-            throw new Error(data.error || 'The AI analysis failed.');
-          }
-
-          setRealityCheckResults(data.realityCheckResults);
-          setTitle(data.suggestedTitle);
-          setSubmissionDescription(data.suggestedDescription);
-
-        } catch (error: any) {
-          setRealityCheckError(error.message);
-          setTitle('A new vision for ' + project.title);
-          setSubmissionDescription(idea);
-        } finally {
-          setIsCheckingReality(false);
-        }
-      };
-
-      performAnalysis();
-    }
-  }, [generatedImage, project, idea]);
-
   const handleGenerateVision = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idea.trim() || !project) return;
@@ -111,12 +72,14 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     setSubmissionStatus('idle');
 
     try {
+      const sourceImage = baseImage === 'last' && generatedImage ? generatedImage : project.image;
+
       const prompt = `${idea}. Enhance this ${project.title} design by integrating these improvements while maintaining the original architectural character and composition as close as possible.`;
 
       const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, projectId: project.id, originalImage: project.image }),
+        body: JSON.stringify({ prompt, projectId: project.id, originalImage: sourceImage }),
       });
 
       const data = await response.json();
@@ -126,10 +89,59 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
       setGeneratedImage(data.imageUrl);
 
+      setPromptHistory(prev => [...prev, idea]);
+
+      if (!showBaseSelector) {
+        setShowBaseSelector(true);
+      }
+
+      setIdea('');
+
     } catch (err: any) {
       setGenerationError(err.message || 'An unknown error occurred.');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleAnalyzeIdea = async () => {
+    if (!generatedImage || !project || promptHistory.length === 0) return;
+
+    setIsCheckingReality(true);
+    setRealityCheckError(null);
+    setRealityCheckResults(null);
+    setTitle('');
+    setSubmissionDescription('');
+
+    try {
+      const combinedPrompts = promptHistory.join(' | ');
+
+      const response = await fetch('/api/analyze-idea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: combinedPrompts,
+          limitations: project.limitations || [],
+          projectTitle: project.title,
+          projectDescription: project.short_description
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || data.error) {
+        throw new Error(data.error || 'The AI analysis failed.');
+      }
+
+      setRealityCheckResults(data.realityCheckResults);
+      setTitle(data.suggestedTitle);
+      setSubmissionDescription(data.suggestedDescription);
+
+    } catch (error: any) {
+      setRealityCheckError(error.message);
+      setTitle('A new vision for ' + project.title);
+      setSubmissionDescription(promptHistory[promptHistory.length - 1] || '');
+    } finally {
+      setIsCheckingReality(false);
     }
   };
 
@@ -190,7 +202,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
   const isStep1Complete = !!generatedImage;
   const isStep2Active = isStep1Complete;
-  const isStep2Complete = isStep1Complete && (!isCheckingReality && (!!realityCheckResults || !!realityCheckError || !project?.limitations || project.limitations.length === 0));;
+  const isStep2Complete = isStep1Complete && (!isCheckingReality && (!!realityCheckResults || !!realityCheckError || !project?.limitations || project.limitations.length === 0));
   const isStep3Active = isStep2Complete;
   const isStep3Complete = submissionStatus === 'success';
   const isSubmitEnabled = isStep3Active && !!title.trim() && !!submissionDescription.trim() && !isSubmitting;
@@ -227,9 +239,26 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                           <textarea id="idea" value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="e.g., 'Add a children's playground with natural materials...'" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all" rows={4} required />
                           <p className="text-xs text-gray-500 mt-2">Be specific. Your description will guide the AI in generating the new vision.</p>
                         </div>
-                        <button type="submit" disabled={!idea.trim() || isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
-                          {isGenerating ? (<>Generating Vision ...</>) : (<><Sparkles className="w-5 h-5" /> Generate Updated Vision</>)}
-                        </button>
+
+                        <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                          <button type="submit" disabled={!idea.trim() || isGenerating} className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
+                            {isGenerating ? (<>Generating Vision ...</>) : (<><Sparkles className="w-5 h-5" /> Generate {showBaseSelector ? 'Next' : 'Updated'} Vision</>)}
+                          </button>
+
+                          {showBaseSelector && !isGenerating && (
+                            <div className="relative w-full sm:w-auto">
+                              <select
+                                value={baseImage}
+                                onChange={(e) => setBaseImage(e.target.value as 'original' | 'last')}
+                                className="appearance-none h-full w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                              >
+                                <option value="original">From Original</option>
+                                <option value="last">From Last Generation</option>
+                              </select>
+                              <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+                          )}
+                        </div>
                       </form>
 
                       {isGenerating && (<div className="mt-8 p-8 bg-gray-50 border border-gray-200 rounded-xl text-center"><Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" /><h3 className="text-lg font-semibold text-gray-900 mb-2">Creating Your Vision...</h3><p className="text-gray-600 text-sm">Our AI is generating a visual representation of your idea. This can take up to 30 seconds.</p></div>)}
@@ -239,6 +268,27 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                   </Step>
 
                   <Step number={2} title="Reality Check" isLastStep={false} isComplete={isStep2Complete} isActive={isStep2Active}>
+                    {isStep2Active && !isCheckingReality && !realityCheckResults && !realityCheckError && (
+                      <div className="space-y-4">
+                        <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                          <p className="text-blue-900 text-sm mb-4">Ready to analyze your idea against the project's limitations?</p>
+                          <button
+                            onClick={handleAnalyzeIdea}
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                          >
+                            <Sparkles className="w-5 h-5" />
+                            Analyze Idea
+                          </button>
+                        </div>
+
+                        {(!project?.limitations || project.limitations.length === 0) && (
+                          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <p className="text-gray-600 text-xs">Note: This project has no specific limitations to check against, but analysis will still generate submission details.</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {isCheckingReality && (
                       <div className="flex items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
                         <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
@@ -255,12 +305,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                         {realityCheckResults.map((result, index) => (
                           <LimitationCheckCard key={index} result={result} />
                         ))}
-                        <p className="text-xs text-gray-500 mt-2">Our AI reviewed your idea against the project’s limitations. This is just a suggestion, as you can still submit your idea.</p>
-                      </div>
-                    )}
-                    {isStep2Active && !isCheckingReality && !realityCheckResults && !realityCheckError && (!project?.limitations || project.limitations.length === 0) && (
-                      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                        <p className="text-gray-600 text-sm">This project has no specific limitations to check against.</p>
+                        <p className="text-xs text-gray-500 mt-2">Our AI reviewed your idea against the project's limitations. This is just a suggestion, as you can still submit your idea.</p>
                       </div>
                     )}
                   </Step>
