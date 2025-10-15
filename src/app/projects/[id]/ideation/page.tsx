@@ -27,6 +27,8 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
+  const [moderationIssue, setModerationIssue] = useState<string | null>(null);
+
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
@@ -133,25 +135,47 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
   const handleSubmitToDatabase = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title.trim() || !submissionDescription.trim() || !generatedImage || !project) return;
+
     setIsSubmitting(true);
+    setModerationIssue(null);
     setSubmissionStatus('idle');
+
     try {
+      const moderationResponse = await fetch('/api/moderate-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description: submissionDescription }),
+      });
+
+      if (!moderationResponse.ok) {
+        const errorData = await moderationResponse.json();
+        setModerationIssue(errorData.reason || 'Your content could not be verified. Please try again.');
+        setSubmissionStatus('error');
+        setIsSubmitting(false);
+        return;
+      }
+
       const userIdCookie = document.cookie.split('; ').find(row => row.startsWith('anonymous-user-id='));
       const userId = userIdCookie ? userIdCookie.split('=')[1] : 'unknown';
+
       const response = await fetch('/api/submit-idea', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description: submissionDescription, generatedImage, project_reference: project.reference, user_id: userId }),
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to submit idea.');
       }
+
       setSubmissionStatus('success');
     } catch (err: any) {
       console.error("Submission failed", err);
       setSubmissionStatus('error');
+      setModerationIssue(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -185,8 +209,8 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
                 <div className="text-center mb-16">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"><Lightbulb className="w-8 h-8 text-blue-600" /></div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">Enhance the Design</h1>
-                  <p className="text-gray-600">Share your idea to visually enhance the {project.title}</p>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">Craft Your Idea</h1>
+                  <p className="text-gray-600">Create and share your vision to enhance the {project.title}</p>
                 </div>
 
                 <div>
@@ -256,10 +280,22 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
 
                   <div>
                     {submissionStatus !== 'success' && (
-                      <div className="text-center">
-                        <button onClick={handleSubmitToDatabase} disabled={!isSubmitEnabled} className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                      <div className="text-center space-y-4">
+
+                        {moderationIssue && (
+                          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                            <p className="text-red-700 text-sm font-medium">{moderationIssue}</p>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={handleSubmitToDatabase}
+                          disabled={!isSubmitEnabled}
+                          className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
                           {isSubmitting ? (<><Loader2 className="w-5 h-5 animate-spin" /> Submitting...</>) : (<><Send className="w-5 h-5" /> Submit Idea</>)}
                         </button>
+
                       </div>
                     )}
                     {submissionStatus === 'success' && (
@@ -279,7 +315,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                         </Link>
                       </div>
                     )}
-                    {submissionStatus === 'error' && (
+                    {submissionStatus === 'error' && !moderationIssue && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
                         <p className="text-red-700 text-sm font-medium">
                           Submission failed. Please try again.

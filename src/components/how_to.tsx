@@ -22,7 +22,7 @@ export const HowTo = () => {
                 <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm border border-gray-100">
                   <Compass className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Discover a Project</h3>
+                <h3 className="text-xl font-semibold text-gray-900">1. Discover a Project</h3>
               </div>
               <p className="text-gray-600">
                 Browse active initiatives and choose one that sparks your interest.
@@ -38,7 +38,7 @@ export const HowTo = () => {
                 <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm border border-gray-100">
                   <Sparkles className="w-6 h-6 text-indigo-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Craft Your Vision</h3>
+                <h3 className="text-xl font-semibold text-gray-900">2. Craft Your Vision</h3>
               </div>
               <p className="text-gray-600">
                 Describe your idea and let our AI generate a visual to bring it to life.
@@ -54,7 +54,7 @@ export const HowTo = () => {
                 <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm border border-gray-100">
                   <Send className="w-6 h-6 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Launch Your Idea</h3>
+                <h3 className="text-xl font-semibold text-gray-900">3. Launch Your Idea</h3>
               </div>
               <p className="text-gray-600">
                 Submit your concept to share it with the community and gather support.
