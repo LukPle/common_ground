@@ -41,10 +41,10 @@ export const Header = () => {
             </Link>
 
             {/* Desktop Navigation - Visible on SM and up */}
-            <nav className="hidden sm:flex sm:space-x-4 gap-4">
+            <nav className="hidden md:flex sm:space-x-4 gap-4">
               <Link
                 href="/"
-                className={`text-sm font-medium transition-colors ${pathname === '/'
+                className={`text-md font-medium transition-colors ${pathname === '/'
                   ? 'text-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
                   }`}
@@ -53,7 +53,7 @@ export const Header = () => {
               </Link>
               <Link
                 href="/about"
-                className={`text-sm font-medium transition-colors ${pathname === '/about'
+                className={`text-md font-medium transition-colors ${pathname === '/about'
                   ? 'text-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
                   }`}
@@ -63,7 +63,7 @@ export const Header = () => {
             </nav>
 
             {/* Burger Icon - Hidden on SM and up */}
-            <div className="sm:hidden">
+            <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(true)}
                 className="p-2 text-gray-600 hover:text-gray-900"
@@ -78,7 +78,7 @@ export const Header = () => {
 
       {/* Mobile Menu Overlay - Only active below SM */}
       <div
-        className={`fixed inset-0 z-50 bg-white transition-opacity duration-300 ease-in-out sm:hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-50 bg-white transition-opacity duration-300 ease-in-out md:hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
       >
         <button

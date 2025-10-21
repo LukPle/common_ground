@@ -421,7 +421,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
         >
           <button
             onClick={closeModal}
-            className="absolute right-4 top-6 sm:top-6 sm:right-8 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 z-50 transition-colors"
+            className="absolute right-6 top-4 md:top-4 md:right-8 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 z-50 transition-colors"
             aria-label="Close image view"
           >
             <X className="w-6 h-6" />
