@@ -1,6 +1,6 @@
 'use client';
 
-import { MouseEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Hero = () => {
   const [hoveredBlock, setHoveredBlock] = useState<number | null>(null);
@@ -18,11 +18,8 @@ export const Hero = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, [isMobile]);
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = () => {
     if (isMobile) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
   };
 
   const handleMouseLeave = () => {
@@ -30,13 +27,15 @@ export const Hero = () => {
   };
 
   const desktopBlocks = [
+    // Top row
     { id: 1, x: 2, y: 8, w: 12, h: 18, color: 'from-blue-400/20 to-blue-500/10' },
     { id: 2, x: 16, y: 4, w: 15, h: 22, color: 'from-indigo-400/15 to-indigo-500/10' },
     { id: 3, x: 33, y: 10, w: 10, h: 16, color: 'from-purple-400/20 to-purple-500/10' },
     { id: 4, x: 45, y: 6, w: 13, h: 20, color: 'from-blue-500/15 to-blue-600/10' },
     { id: 5, x: 60, y: 3, w: 16, h: 17, color: 'from-indigo-500/20 to-indigo-600/10' },
     { id: 6, x: 78, y: 8, w: 12, h: 19, color: 'from-purple-500/15 to-purple-600/10' },
-    { id: 7, x: 93, y: 5, w: 6, h: 22, color: 'from-blue-400/20 to-blue-500/15' },
+    { id: 7, x: 92, y: 5, w: 6, h: 22, color: 'from-blue-400/20 to-blue-500/15' },
+    // Middle row
     { id: 8, x: 4, y: 30, w: 14, h: 15, color: 'from-purple-400/15 to-purple-500/10' },
     { id: 9, x: 20, y: 32, w: 11, h: 20, color: 'from-blue-500/20 to-blue-600/10' },
     { id: 10, x: 33, y: 34, w: 13, h: 14, color: 'from-indigo-400/15 to-indigo-500/10' },
@@ -44,6 +43,7 @@ export const Hero = () => {
     { id: 12, x: 60, y: 28, w: 15, h: 16, color: 'from-blue-400/15 to-blue-500/10' },
     { id: 13, x: 77, y: 33, w: 12, h: 19, color: 'from-indigo-500/20 to-indigo-600/10' },
     { id: 14, x: 91, y: 30, w: 8, h: 15, color: 'from-purple-400/15 to-purple-500/10' },
+    // Bottom row
     { id: 15, x: 1, y: 55, w: 13, h: 20, color: 'from-blue-500/20 to-blue-600/10' },
     { id: 16, x: 16, y: 58, w: 16, h: 17, color: 'from-indigo-400/15 to-indigo-500/10' },
     { id: 17, x: 34, y: 53, w: 11, h: 22, color: 'from-purple-500/20 to-purple-600/10' },
@@ -51,12 +51,13 @@ export const Hero = () => {
     { id: 19, x: 63, y: 51, w: 12, h: 24, color: 'from-indigo-500/20 to-indigo-600/10' },
     { id: 20, x: 77, y: 57, w: 13, h: 16, color: 'from-purple-400/20 to-purple-500/10' },
     { id: 21, x: 92, y: 54, w: 7, h: 20, color: 'from-blue-500/15 to-blue-600/10' },
-    { id: 22, x: 8, y: 80, w: 15, h: 18, color: 'from-indigo-400/20 to-indigo-500/10' },
-    { id: 23, x: 25, y: 82, w: 12, h: 16, color: 'from-purple-500/15 to-purple-600/10' },
-    { id: 24, x: 39, y: 79, w: 14, h: 19, color: 'from-blue-400/20 to-blue-500/10' },
-    { id: 25, x: 55, y: 81, w: 16, h: 17, color: 'from-indigo-500/15 to-indigo-600/10' },
-    { id: 26, x: 73, y: 78, w: 11, h: 20, color: 'from-purple-400/20 to-purple-500/10' },
-    { id: 27, x: 86, y: 80, w: 13, h: 18, color: 'from-blue-500/20 to-blue-600/10' },
+    // Bottom edge
+    { id: 22, x: 6, y: 78, w: 15, h: 18, color: 'from-indigo-400/20 to-indigo-500/10' },
+    { id: 23, x: 24, y: 78, w: 12, h: 16, color: 'from-purple-500/15 to-purple-600/10' },
+    { id: 24, x: 38, y: 80, w: 14, h: 17, color: 'from-blue-400/20 to-blue-500/10' },
+    { id: 25, x: 54, y: 78, w: 16, h: 15, color: 'from-indigo-500/15 to-indigo-600/10' },
+    { id: 26, x: 72, y: 80, w: 11, h: 15, color: 'from-purple-400/20 to-purple-500/10' },
+    { id: 27, x: 85, y: 78, w: 13, h: 15, color: 'from-blue-500/20 to-blue-600/10' },
   ];
 
   const mobileBlocks = [
@@ -69,8 +70,14 @@ export const Hero = () => {
   ];
 
   const blocks = isMobile ? mobileBlocks : desktopBlocks;
-  const gridNodeCount = isMobile ? 12 : 30;
-  const gridCols = isMobile ? 3 : 6;
+
+  const desktopGridNodeCount = 30;
+  const desktopGridCols = 6;
+  const mobileGridNodeCount = 12;
+  const mobileGridCols = 3;
+
+  const gridNodeCount = isMobile ? mobileGridNodeCount : desktopGridNodeCount;
+  const gridCols = isMobile ? mobileGridCols : desktopGridCols;
 
   const gridNodes = Array.from({ length: gridNodeCount }, (_, i) => ({
     id: i,
@@ -114,7 +121,7 @@ export const Hero = () => {
 
   return (
     <div
-      className="relative z-30 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20 md:py-36 overflow-hidden"
+      className="relative z-30 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20 md:py-32 overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -129,7 +136,7 @@ export const Hero = () => {
             gridNodes.slice(i + 1).map((node2, j) => {
               const distance = getDistance(node.x, node.y, node2.x, node2.y);
               if (distance < (isMobile ? 40 : 30)) {
-                return <line key={`line-${i}-${j}`} x1={`${node.x}%`} y1={`${node.y}%`} x2={`${node.x}%`} y2={`${node2.y}%`} stroke="url(#lineGradient)" strokeWidth="1.5" opacity={isMobile ? 0.1 : getLineOpacity(node, node2)} className="transition-all duration-500 ease-out" />;
+                return <line key={`line-${i}-${j}`} x1={`${node.x}%`} y1={`${node.y}%`} x2={`${node2.x}%`} y2={`${node2.y}%`} stroke="url(#lineGradient)" strokeWidth="1.5" opacity={isMobile ? 0.1 : getLineOpacity(node, node2)} className="transition-all duration-500 ease-out" />;
               }
               return null;
             })
