@@ -22,7 +22,7 @@ export const teamMembers: TeamMember[] = [
   {
     name: "Lukas Plenk",
     role: "Designer and Developer",
-    description: "Enabling communities to contribute meaningful solutions to complex urban planning problems.",
+    description: "Empowering citizens to express their voices and build their city together as a community.",
     image: "images/lukas.png"
   },
   {

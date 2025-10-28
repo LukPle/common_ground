@@ -35,8 +35,12 @@ export const Header = () => {
                 priority
               />
               <div>
-                <h1 className="text-l font-bold text-gray-900">Common Ground</h1>
-                <p className="text-xs text-gray-500">Collaborative Citizen Participation</p>
+                <h1 className="text-l font-semibold text-gray-900">
+                  Common Ground
+                </h1>
+                <p className="text-xs text-gray-500">
+                  Collaborative Citizen Participation
+                </p>
               </div>
             </Link>
 
@@ -92,7 +96,7 @@ export const Header = () => {
           <Link
             href="/"
             onClick={() => setIsMenuOpen(false)}
-            className={`text-3xl font-bold transition-colors ${pathname === '/' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
+            className={`text-2xl font-semibold transition-colors ${pathname === '/' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
               }`}
           >
             Projects
@@ -100,7 +104,7 @@ export const Header = () => {
           <Link
             href="/about"
             onClick={() => setIsMenuOpen(false)}
-            className={`text-3xl font-bold transition-colors ${pathname === '/about' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
+            className={`text-2xl font-semibold transition-colors ${pathname === '/about' ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600'
               }`}
           >
             About

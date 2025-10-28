@@ -63,13 +63,28 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
     getProjectData();
   }, [params.id]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    if (modalImageSrc) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [modalImageSrc]);
+
   const handleGenerateVision = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idea.trim() || !project) return;
 
     setIsGenerating(true);
     setGenerationError(null);
-    setGeneratedImage(null);
     setRealityCheckResults(null);
     setTitle('');
     setSubmissionStatus('idle');
@@ -91,7 +106,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       }
 
       setGeneratedImage(data.imageUrl);
-
+      setBaseImage('last');
       setPromptHistory(prev => [...prev, idea]);
 
       if (!showBaseSelector) {
@@ -218,7 +233,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   if (!project) { return <div>Project could not be loaded.</div>; }
 
   const isStep1Complete = !!generatedImage;
-  const isStep2Active = isStep1Complete;
+  const isStep2Active = isStep1Complete && !isGenerating;
   const isStep2Complete = isStep1Complete && (!isCheckingReality && (!!realityCheckResults || !!realityCheckError || !project?.limitations || project.limitations.length === 0));
   const isStep3Active = isStep2Complete;
   const isStep3Complete = submissionStatus === 'success';

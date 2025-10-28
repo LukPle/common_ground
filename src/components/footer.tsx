@@ -1,6 +1,6 @@
 'use client';
 
-import { Github, Shield } from 'lucide-react';
+import { Github, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export const Footer = () => {
@@ -20,7 +20,7 @@ export const Footer = () => {
               href="/privacy"
               className="flex items-center gap-2 hover:text-gray-900 transition-colors"
             >
-              <Shield className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4" />
               <span>Privacy Policy</span>
             </Link>
 

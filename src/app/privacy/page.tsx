@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
                             Privacy Policy
                         </h1>
                         <p className="text-xl text-gray-600">
-                            Empowering your voice while protecting your data.
+                            Empowering your voice while protecting your data
                         </p>
                     </div>
                 </div>

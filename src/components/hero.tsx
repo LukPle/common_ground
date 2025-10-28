@@ -91,11 +91,11 @@ export const Hero = () => {
 
   const getBlockTransform = (block: typeof blocks[0]) => {
     if (hoveredBlock === null) return { scale: 1, brightness: 1, z: 0 };
-    if (block.id === hoveredBlock) return { scale: 1.1, brightness: 1.25, z: 30 };
+    if (block.id === hoveredBlock) return { scale: 1.1, brightness: 1.15, z: 30 };
     const hoveredData = blocks.find(b => b.id === hoveredBlock);
     if (!hoveredData) return { scale: 1, brightness: 1, z: 0 };
     const distance = getDistance(block.x + block.w / 2, block.y + block.h / 2, hoveredData.x + hoveredData.w / 2, hoveredData.y + hoveredData.h / 2);
-    if (distance < 25) return { scale: 1.05, brightness: 1.15, z: 20 };
+    if (distance < 25) return { scale: 1.05, brightness: 1.05, z: 20 };
     return { scale: 1, brightness: 1, z: 0 };
   };
 
