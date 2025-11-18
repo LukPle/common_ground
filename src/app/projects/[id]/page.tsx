@@ -74,19 +74,18 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 divide-y divide-gray-200">
-
-          {/* At-a-Glance Info Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-3">
-            <div className="py-6 px-8 sm:px-10 flex items-center gap-4">
+      {/* At-a-Glance Info Section */}
+      <div className="border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 py-2 sm:gap-6 sm:grid-cols-3">
+            <div className="py-4 flex items-center gap-4">
               <Users className={`w-8 h-8`} />
               <div>
                 <p className="text-sm text-gray-500">Status</p>
                 <p className="text-lg font-semibold text-gray-900">{status}</p>
               </div>
             </div>
-            <div className="p-6 flex items-center gap-4 sm:border-l sm:border-r">
+            <div className="py-4 flex items-center gap-4">
               <Clock className={`w-8 h-8 ${daysLeft > 30 ? 'text-emerald-600' : daysLeft > 7 ? 'text-amber-600' : 'text-red-600'}`} />
               <div>
                 <p className="text-sm text-gray-500">Deadline</p>
@@ -95,7 +94,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </p>
               </div>
             </div>
-            <div className="p-6 flex items-center gap-4">
+            <div className="py-4 flex items-center gap-4">
               <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-500">Community Input</p>
@@ -103,52 +102,54 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="p-8 sm:p-10 space-y-10">
-            {/* Full Description */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Project</h2>
-              <p className="text-gray-600 leading-relaxed text-base">
-                {project.full_description}
-              </p>
-            </div>
+      <div className="max-w-7xl mx-auto px-4 space-y-12 py-10 sm:px-6 lg:px-8">
+        {/* Full Description */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">About This Project</h2>
+          <p className="text-gray-600 leading-relaxed text-base">
+            {project.full_description}
+          </p>
+        </div>
 
-            {/* Limitations */}
-            {project.limitations && project.limitations.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Limitations</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {project.limitations.map((limitation, idx) => (
-                    <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-3 transition-all">
-                      <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{limitation}</span>
-                    </div>
-                  ))}
+        {/* Limitations */}
+        {project.limitations && project.limitations.length > 0 && (
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Limitations</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {project.limitations.map((limitation, idx) => (
+                <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start gap-3 transition-all">
+                  <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">{limitation}</span>
                 </div>
-              </div>
-            )}
-
-            {/* Idea List */}
-            {ideas && ideas.length > 0 && (
-              <IdeaList ideas={ideas} ideaCount={ideaCount} />
-            )}
-
-            {/* Call to Action */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
-              <Lightbulb className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Have an Idea?</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Your perspective is crucial. Share your vision for the park and help shape this project's future.
-              </p>
-              <Link href={`/projects/${project.reference}/ideation`}>
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-flex items-center gap-2">
-                  Submit Your Idea
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              </Link>
+              ))}
             </div>
           </div>
+        )}
+
+        {/* Call to Action */}
+        <div className="bg-blue-50 rounded-xl lg:rounded-full p-6 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+          <Lightbulb className="w-8 h-8 text-blue-600 flex-shrink-0" />
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Have an Idea?</h3>
+            <p className="text-gray-600 text-sm">
+              Your perspective is crucial. Share your vision for the park and help shape this project's future.
+            </p>
+          </div>
+          <Link href={`/projects/${project.reference}/ideation`} className="w-full lg:w-auto">
+            <button className="w-full lg:w-auto bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all inline-flex items-center justify-center gap-2 flex-shrink-0">
+              Submit Your Idea
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </Link>
         </div>
+
+        {/* Idea List */}
+        {ideas && ideas.length > 0 && (
+          <IdeaList ideas={ideas} ideaCount={ideaCount} />
+        )}
       </div>
 
       <Footer />

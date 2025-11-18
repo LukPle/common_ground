@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Idea } from '../types/idea';
 import { IdeaCard } from './idea_card';
 
@@ -9,16 +9,35 @@ const IDEAS_TO_LOAD = 6;
 
 export const IdeaList = ({ ideas, ideaCount }: { ideas: Idea[], ideaCount: number }) => {
   const [visibleCount, setVisibleCount] = useState(INITIAL_DISPLAY_COUNT);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  const showMoreIdeas = () => {
-    setVisibleCount(prevCount => prevCount + IDEAS_TO_LOAD);
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && visibleCount < ideas.length) {
+          setVisibleCount(prevCount => Math.min(prevCount + IDEAS_TO_LOAD, ideas.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [visibleCount, ideas.length]);
 
   const visibleIdeas = ideas.slice(0, visibleCount);
 
   return (
     <div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-6">Community Ideas ({ideaCount})</h3>
 
       {/* Grid of visible ideas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -27,15 +46,15 @@ export const IdeaList = ({ ideas, ideaCount }: { ideas: Idea[], ideaCount: numbe
         ))}
       </div>
 
-      {/* "Show More" Button */}
+      {/* Lazy load trigger element */}
       {visibleCount < ideas.length && (
-        <div className="text-center mt-8">
-          <button
-            onClick={showMoreIdeas}
-            className="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all shadow-sm border border-gray-200"
-          >
-            Show More
-          </button>
+        <div
+          ref={observerTarget}
+          className="flex justify-center items-center py-8"
+        >
+          <div className="animate-pulse text-gray-500 text-sm">
+            Loading more ideas...
+          </div>
         </div>
       )}
     </div>

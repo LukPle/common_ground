@@ -11,7 +11,7 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Link href={`/projects/${project.reference}`} className="block group">
-      <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 border border-gray-100">
+      <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden transition-all duration-300 border border-gray-100">
         <div className="relative h-48 overflow-hidden">
           <Image
             src={project.image}

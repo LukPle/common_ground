@@ -16,8 +16,6 @@ export default async function Home() {
       <Header />
       <Hero />
 
-      <HowTo />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 md:pt-24 md:pb-24">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">

@@ -13,7 +13,7 @@ export const IdeaCard = ({ idea }: IdeaCardProps) => {
       href={`/projects/${idea.project_reference}/ideas/${idea.id}`}
       className="block group"
     >
-      <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+      <div className="bg-white rounded-xl overflow-hidden transition-all duration-300 border border-gray-100 group">
         <div className="relative h-48 overflow-hidden">
           {idea.generated_image ? (
             <Image
@@ -30,7 +30,7 @@ export const IdeaCard = ({ idea }: IdeaCardProps) => {
         </div>
 
         <div className="p-5">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 truncate" title={idea.title}>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate" title={idea.title}>
             {idea.title}
           </h3>
           {idea.description && (
