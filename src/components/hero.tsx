@@ -1,183 +1,288 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { HowTo } from './how_to';
+
+interface Rectangle {
+  mesh: THREE.Mesh;
+  position: THREE.Vector3;
+  originalY: number;
+  targetY: number;
+  material: THREE.MeshStandardMaterial;
+  targetColor: THREE.Color;
+}
 
 export const Hero = () => {
-  const [hoveredBlock, setHoveredBlock] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<{
+    scene: THREE.Scene;
+    camera: THREE.OrthographicCamera;
+    renderer: THREE.WebGLRenderer;
+    rectangles: Rectangle[];
+    raycaster: THREE.Raycaster;
+    mouse: THREE.Vector2;
+    hoverPoint: THREE.Vector3 | null;
+    groundPlane: THREE.Plane;
+    baseColor: number;
+    hoverColor: number;
+  } | null>(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      const mobileCheck = window.innerWidth < 768;
-      if (mobileCheck !== isMobile) {
-        setIsMobile(mobileCheck);
+    if (!canvasRef.current) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf9fafb); // Tailwind gray-50
+
+    // Camera setup - Isometric orthographic
+    const aspect = window.innerWidth / window.innerHeight;
+    const frustumSize = 10;
+    const camera = new THREE.OrthographicCamera(
+      (frustumSize * aspect) / -2,
+      (frustumSize * aspect) / 2,
+      frustumSize / 2,
+      frustumSize / -2,
+      0.1,
+      1000
+    );
+    camera.position.set(8, 8, 8);
+    camera.lookAt(0, 0, 0);
+
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      antialias: true,
+      alpha: false,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    // Color configuration
+    const baseColor = 0xcccccc;
+    const hoverColor = 0xdddddd;
+
+    // Create rectangles in chess pattern
+    const rectangles: Rectangle[] = [];
+    const cols = 12;
+    const rows = 12;
+    const layers = 6;
+    const spacing = 1.0;
+    const width = 1;
+    const height = 1;
+    const depth = 0.01;
+
+    for (let z = 0; z < layers; z++) {
+      for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
+          // Chess pattern - only place on alternating squares (2D checkerboard)
+          if ((x + y) % 2 !== 0) continue;
+
+          const geometry = new THREE.BoxGeometry(width, depth, height);
+
+          const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            emissive: baseColor,
+            emissiveIntensity: 1,
+          });
+
+          const mesh = new THREE.Mesh(geometry, material);
+
+          // Position in grid
+          const posX = (x - cols / 2) * spacing;
+          const posY = 0;
+          const posZ = (y - rows / 2) * spacing - z * spacing * 2;
+
+          mesh.position.set(posX, posY, posZ);
+
+          rectangles.push({
+            mesh,
+            position: mesh.position.clone(),
+            originalY: posY,
+            targetY: posY,
+            material,
+            targetColor: new THREE.Color(baseColor),
+          });
+
+          scene.add(mesh);
+        }
+      }
+    }
+
+    // Raycaster for hover detection with ground plane
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+    sceneRef.current = {
+      scene,
+      camera,
+      renderer,
+      rectangles,
+      raycaster,
+      mouse,
+      hoverPoint: null,
+      groundPlane,
+      baseColor,
+      hoverColor,
+    };
+
+    // Handle resize
+    const handleResize = () => {
+      if (!sceneRef.current) return;
+      const aspect = window.innerWidth / window.innerHeight;
+      sceneRef.current.camera.left = (frustumSize * aspect) / -2;
+      sceneRef.current.camera.right = (frustumSize * aspect) / 2;
+      sceneRef.current.camera.top = frustumSize / 2;
+      sceneRef.current.camera.bottom = frustumSize / -2;
+      sceneRef.current.camera.updateProjectionMatrix();
+      sceneRef.current.renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Initial render
+    renderer.render(scene, camera);
+
+    // Animation loop
+    let animationFrameId: number;
+    let isAnimating = false;
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+
+      if (!sceneRef.current) return;
+
+      let needsRender = false;
+
+      // Smooth transitions for elevation and color
+      sceneRef.current.rectangles.forEach(rect => {
+        // Animate Y position
+        const currentY = rect.mesh.position.y;
+        const targetY = rect.targetY;
+        const diffY = targetY - currentY;
+
+        if (Math.abs(diffY) > 0.001) {
+          rect.mesh.position.y += diffY * 0.1;
+          needsRender = true;
+        } else if (Math.abs(diffY) > 0) {
+          rect.mesh.position.y = targetY;
+          needsRender = true;
+        }
+
+        // Animate color
+        const currentColor = rect.material.emissive;
+        const targetColor = rect.targetColor;
+
+        if (!currentColor.equals(targetColor)) {
+          currentColor.lerp(targetColor, 0.1);
+          needsRender = true;
+        }
+      });
+
+      // Only render if something changed or currently animating
+      if (needsRender) {
+        sceneRef.current.renderer.render(sceneRef.current.scene, sceneRef.current.camera);
+        isAnimating = true;
+      } else if (isAnimating) {
+        // One final render after animation completes
+        sceneRef.current.renderer.render(sceneRef.current.scene, sceneRef.current.camera);
+        isAnimating = false;
       }
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [isMobile]);
+    animate();
 
-  const handleMouseMove = () => {
-    if (isMobile) return;
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+      renderer.dispose();
+      rectangles.forEach(rect => {
+        rect.mesh.geometry.dispose();
+        rect.material.dispose();
+      });
+    };
+  }, []);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!sceneRef.current) return;
+
+    const { raycaster, mouse, camera, rectangles, groundPlane, baseColor, hoverColor } = sceneRef.current;
+
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Update raycaster
+    raycaster.setFromCamera(mouse, camera);
+
+    // Find intersection with ground plane
+    const hoverPoint = new THREE.Vector3();
+    raycaster.ray.intersectPlane(groundPlane, hoverPoint);
+
+    if (hoverPoint) {
+      sceneRef.current.hoverPoint = hoverPoint;
+
+      // Update all rectangles based on distance to hover point
+      rectangles.forEach(rect => {
+        // Calculate distance from rectangle's original position to hover point
+        const distance = new THREE.Vector3(
+          rect.position.x,
+          0,
+          rect.position.z
+        ).distanceTo(new THREE.Vector3(hoverPoint.x, 0, hoverPoint.z));
+
+        // Apply elevation and color based on distance
+        if (distance < 3) {
+          const influence = 1 - distance / 3;
+          rect.targetY = rect.originalY + influence * 0.5;
+          rect.targetColor.setHex(hoverColor);
+        } else {
+          rect.targetY = rect.originalY;
+          rect.targetColor.setHex(baseColor);
+        }
+      });
+    }
   };
 
   const handleMouseLeave = () => {
-    setHoveredBlock(null);
-  };
+    if (!sceneRef.current) return;
 
-  const desktopBlocks = [
-    // Top row
-    { id: 1, x: 2, y: 8, w: 12, h: 18, color: 'from-blue-400/20 to-blue-500/10' },
-    { id: 2, x: 16, y: 4, w: 15, h: 22, color: 'from-indigo-400/15 to-indigo-500/10' },
-    { id: 3, x: 33, y: 10, w: 10, h: 16, color: 'from-purple-400/20 to-purple-500/10' },
-    { id: 4, x: 45, y: 6, w: 13, h: 20, color: 'from-blue-500/15 to-blue-600/10' },
-    { id: 5, x: 60, y: 3, w: 16, h: 17, color: 'from-indigo-500/20 to-indigo-600/10' },
-    { id: 6, x: 78, y: 8, w: 12, h: 19, color: 'from-purple-500/15 to-purple-600/10' },
-    { id: 7, x: 92, y: 5, w: 6, h: 22, color: 'from-blue-400/20 to-blue-500/15' },
-    // Middle row
-    { id: 8, x: 4, y: 30, w: 14, h: 15, color: 'from-purple-400/15 to-purple-500/10' },
-    { id: 9, x: 20, y: 32, w: 11, h: 20, color: 'from-blue-500/20 to-blue-600/10' },
-    { id: 10, x: 33, y: 34, w: 13, h: 14, color: 'from-indigo-400/15 to-indigo-500/10' },
-    { id: 11, x: 48, y: 31, w: 10, h: 18, color: 'from-purple-500/20 to-purple-600/10' },
-    { id: 12, x: 60, y: 28, w: 15, h: 16, color: 'from-blue-400/15 to-blue-500/10' },
-    { id: 13, x: 77, y: 33, w: 12, h: 19, color: 'from-indigo-500/20 to-indigo-600/10' },
-    { id: 14, x: 91, y: 30, w: 8, h: 15, color: 'from-purple-400/15 to-purple-500/10' },
-    // Bottom row
-    { id: 15, x: 1, y: 55, w: 13, h: 20, color: 'from-blue-500/20 to-blue-600/10' },
-    { id: 16, x: 16, y: 58, w: 16, h: 17, color: 'from-indigo-400/15 to-indigo-500/10' },
-    { id: 17, x: 34, y: 53, w: 11, h: 22, color: 'from-purple-500/20 to-purple-600/10' },
-    { id: 18, x: 47, y: 56, w: 14, h: 18, color: 'from-blue-400/15 to-blue-500/10' },
-    { id: 19, x: 63, y: 51, w: 12, h: 24, color: 'from-indigo-500/20 to-indigo-600/10' },
-    { id: 20, x: 77, y: 57, w: 13, h: 16, color: 'from-purple-400/20 to-purple-500/10' },
-    { id: 21, x: 92, y: 54, w: 7, h: 20, color: 'from-blue-500/15 to-blue-600/10' },
-    // Bottom edge
-    { id: 22, x: 6, y: 78, w: 15, h: 18, color: 'from-indigo-400/20 to-indigo-500/10' },
-    { id: 23, x: 24, y: 78, w: 12, h: 16, color: 'from-purple-500/15 to-purple-600/10' },
-    { id: 24, x: 38, y: 80, w: 14, h: 17, color: 'from-blue-400/20 to-blue-500/10' },
-    { id: 25, x: 54, y: 78, w: 16, h: 15, color: 'from-indigo-500/15 to-indigo-600/10' },
-    { id: 26, x: 72, y: 80, w: 11, h: 15, color: 'from-purple-400/20 to-purple-500/10' },
-    { id: 27, x: 85, y: 78, w: 13, h: 15, color: 'from-blue-500/20 to-blue-600/10' },
-  ];
+    const { rectangles, baseColor } = sceneRef.current;
 
-  const mobileBlocks = [
-    { id: 1, x: 3, y: 5, w: 40, h: 25, color: 'from-blue-400/20 to-blue-500/10' },
-    { id: 4, x: 55, y: 10, w: 40, h: 22, color: 'from-blue-500/15 to-blue-600/10' },
-    { id: 5, x: 5, y: 35, w: 45, h: 20, color: 'from-indigo-500/20 to-indigo-600/10' },
-    { id: 8, x: 52, y: 36, w: 43, h: 20, color: 'from-indigo-400/15 to-indigo-500/10' },
-    { id: 9, x: 8, y: 62, w: 40, h: 32, color: 'from-purple-400/20 to-purple-500/10' },
-    { id: 12, x: 55, y: 68, w: 40, h: 26, color: 'from-purple-500/20 to-purple-600/10' },
-  ];
+    rectangles.forEach(rect => {
+      rect.targetY = rect.originalY;
+      rect.targetColor.setHex(baseColor);
+    });
 
-  const blocks = isMobile ? mobileBlocks : desktopBlocks;
-
-  const desktopGridNodeCount = 30;
-  const desktopGridCols = 6;
-  const mobileGridNodeCount = 12;
-  const mobileGridCols = 3;
-
-  const gridNodeCount = isMobile ? mobileGridNodeCount : desktopGridNodeCount;
-  const gridCols = isMobile ? mobileGridCols : desktopGridCols;
-
-  const gridNodes = Array.from({ length: gridNodeCount }, (_, i) => ({
-    id: i,
-    x: 8 + (i % gridCols) * (84 / (gridCols - 1)),
-    y: 15 + Math.floor(i / gridCols) * (70 / Math.ceil(gridNodeCount / gridCols - 1)),
-  }));
-
-  const getDistance = (x1: number, y1: number, x2: number, y2: number) => {
-    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-  };
-
-  const getBlockTransform = (block: typeof blocks[0]) => {
-    if (hoveredBlock === null) return { scale: 1, brightness: 1, z: 0 };
-    if (block.id === hoveredBlock) return { scale: 1.1, brightness: 1.15, z: 30 };
-    const hoveredData = blocks.find(b => b.id === hoveredBlock);
-    if (!hoveredData) return { scale: 1, brightness: 1, z: 0 };
-    const distance = getDistance(block.x + block.w / 2, block.y + block.h / 2, hoveredData.x + hoveredData.w / 2, hoveredData.y + hoveredData.h / 2);
-    if (distance < 25) return { scale: 1.05, brightness: 1.05, z: 20 };
-    return { scale: 1, brightness: 1, z: 0 };
-  };
-
-  const getNodeOpacity = (node: typeof gridNodes[0]) => {
-    if (hoveredBlock === null) return 0.4;
-    const hoveredData = blocks.find(b => b.id === hoveredBlock);
-    if (!hoveredData) return 0.4;
-    const dist = getDistance(node.x, node.y, hoveredData.x + hoveredData.w / 2, hoveredData.y + hoveredData.h / 2);
-    if (dist < 20) return 1;
-    if (dist < 35) return 0.7;
-    return 0.3;
-  };
-
-  const getLineOpacity = (node1: typeof gridNodes[0], node2: typeof gridNodes[0]) => {
-    if (hoveredBlock === null) return 0.1;
-    const hoveredData = blocks.find(b => b.id === hoveredBlock);
-    if (!hoveredData) return 0.1;
-    const dist1 = getDistance(node1.x, node1.y, hoveredData.x + hoveredData.w / 2, hoveredData.y + hoveredData.h / 2);
-    const dist2 = getDistance(node2.x, node2.y, hoveredData.x + hoveredData.w / 2, hoveredData.y + hoveredData.h / 2);
-    if (dist1 < 25 || dist2 < 25) return 0.5;
-    return 0.1;
+    sceneRef.current.hoverPoint = null;
   };
 
   return (
     <div
-      className="relative z-30 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20 md:py-32 overflow-hidden"
+      className="relative z-30 bg-gray-50 py-20 md:py-32 overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="absolute inset-0">
-        <svg className="w-full h-full absolute inset-0" preserveAspectRatio="none">
-          <defs>
-            <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur" /><feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#6366f1" /><stop offset="100%" stopColor="#8b5cf6" /></linearGradient>
-          </defs>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+      />
 
-          {gridNodes.map((node, i) =>
-            gridNodes.slice(i + 1).map((node2, j) => {
-              const distance = getDistance(node.x, node.y, node2.x, node2.y);
-              if (distance < (isMobile ? 40 : 30)) {
-                return <line key={`line-${i}-${j}`} x1={`${node.x}%`} y1={`${node.y}%`} x2={`${node2.x}%`} y2={`${node2.y}%`} stroke="url(#lineGradient)" strokeWidth="1.5" opacity={isMobile ? 0.1 : getLineOpacity(node, node2)} className="transition-all duration-500 ease-out" />;
-              }
-              return null;
-            })
-          )}
-          {gridNodes.map(node => (
-            <circle key={`node-${node.id}`} cx={`${node.x}%`} cy={`${node.y}%`} r={isMobile ? "3" : "4"} fill="#6366f1" opacity={isMobile ? 0.4 : getNodeOpacity(node)} filter="url(#glow)" className="transition-all duration-500 ease-out" />
-          ))}
-        </svg>
-
-        {blocks.map(block => {
-          const transform = isMobile ? { scale: 1, brightness: 1, z: 0 } : getBlockTransform(block);
-          return (
-            <div
-              key={block.id}
-              className={`absolute bg-gradient-to-br ${block.color} border border-white/60 backdrop-blur-sm rounded-sm transition-all duration-500 ease-out ${!isMobile ? 'cursor-pointer' : ''}`}
-              style={{
-                left: `${block.x}%`, top: `${block.y}%`,
-                width: `${block.w}%`, height: `${block.h}%`,
-                transform: `scale(${transform.scale}) translateZ(0)`,
-                filter: `brightness(${transform.brightness})`,
-                boxShadow: `0 ${transform.z}px ${transform.z * 2}px rgba(99, 102, 241, ${0.05 + transform.z * 0.005}), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
-                zIndex: transform.z,
-              }}
-              onMouseEnter={() => !isMobile && setHoveredBlock(block.id)}
-            />
-          );
-        })}
-      </div>
-
-      <div className={`relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${!isMobile ? 'pointer-events-none' : ''}`}>
-        <div className="text-center max-w-3xl mx-auto">
+      <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pointer-events-none">
+        <div className="text-left max-w-7xl mx-auto">
           <div className="relative">
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-3xl -m-6" style={{ maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 85%)', WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 85%)' }} />
-            <div className="relative">
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                <span className="block">Shaping Cities on</span>
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-700 text-transparent bg-clip-text">Common Ground</span>
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">Bring your voice to the table. Share ideas, shape policies, and co-create the cities we need for tomorrow.</p>
-            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              <span className="block">Shaping Cities on</span>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-700 text-transparent bg-clip-text">Common Ground</span>
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">Bring your voice to the table. Share ideas, shape policies, and co-create the cities we need for tomorrow.</p>
           </div>
+          <HowTo />
         </div>
       </div>
     </div>
