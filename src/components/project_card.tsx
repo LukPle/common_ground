@@ -27,16 +27,18 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col flex-grow p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            {project.title}
-          </h3>
+        <div className="flex flex-col flex-grow py-4">
+          <div className="px-6">
+            <h3 className="font-semibold text-gray-900 mb-2">
+              {project.title}
+            </h3>
 
-          <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
-            {project.short_description}
-          </p>
+            <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+              {project.short_description}
+            </p>
+          </div>
 
-          <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="mt-auto px-6 flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center gap-1.5" title="Ideas Submitted">
                 <Lightbulb className="w-4 h-4" />

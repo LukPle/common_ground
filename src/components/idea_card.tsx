@@ -29,8 +29,8 @@ export const IdeaCard = ({ idea }: IdeaCardProps) => {
           )}
         </div>
 
-        <div className="p-5">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate" title={idea.title}>
+        <div className="px-6 pt-4">
+          <h3 className="font-semibold text-gray-900 mb-2 truncate" title={idea.title}>
             {idea.title}
           </h3>
           {idea.description && (
@@ -38,20 +38,20 @@ export const IdeaCard = ({ idea }: IdeaCardProps) => {
               {idea.description}
             </p>
           )}
+        </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500" title={`Submitted on ${new Date(idea.created_at).toLocaleString()}`}>
-              <Calendar className="w-3.5 h-3.5" />
-              <span>
-                {new Date(idea.created_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-all" />
+        <div className="px-6 flex items-center justify-between py-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500" title={`Submitted on ${new Date(idea.created_at).toLocaleString()}`}>
+            <Calendar className="w-3.5 h-3.5" />
+            <span>
+              {new Date(idea.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </span>
           </div>
+          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-all" />
         </div>
       </div>
     </Link>

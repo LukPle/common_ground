@@ -50,10 +50,10 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
           className={`absolute top-0 left-2 bottom-0 w-16 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-300
             ${showLeftFade ? 'opacity-100' : 'opacity-0'}`} />
 
-        <div className="flex items-center overflow-hidden pt-1">
+        <div className="flex items-center overflow-hidden">
           <ol
             ref={scrollContainerRef}
-            className="flex items-center space-x-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap pb-2
+            className="flex items-center space-x-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap
               [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
             {items.map((item, index) => {
