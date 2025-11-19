@@ -2,6 +2,20 @@ import { NewIdea } from '../../types/idea';
 import { Project } from '../../types/project';
 import { createClient as createBrowserClient } from './client';
 
+export async function fetchProjectsClient(): Promise<Project[]> {
+  const supabase = createBrowserClient();
+  const { data: projects, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Client-side fetch error:', error.message);
+    return [];
+  }
+  return projects || [];
+}
+
 export async function fetchProjectByIdClient(id: string): Promise<Project | null> {
   const supabase = createBrowserClient();
   const { data: project, error } = await supabase
