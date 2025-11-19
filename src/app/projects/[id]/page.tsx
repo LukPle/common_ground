@@ -75,21 +75,21 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       {/* Main Content Area */}
       {/* At-a-Glance Info Section */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 py-2 sm:gap-6 sm:grid-cols-3">
             <div className="py-4 flex items-center gap-4">
               <Users className={`w-8 h-8`} />
               <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <p className="text-lg font-semibold text-gray-900">{status}</p>
+                <p className="text-muted-foreground">Status</p>
+                <p className="font-semibold text-foreground">{status}</p>
               </div>
             </div>
             <div className="py-4 flex items-center gap-4">
               <Clock className={`w-8 h-8 ${daysLeft > 30 ? 'text-emerald-600' : daysLeft > 7 ? 'text-amber-600' : 'text-red-600'}`} />
               <div>
-                <p className="text-sm text-gray-500">Deadline</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-muted-foreground">Deadline</p>
+                <p className="font-semibold text-foreground">
                   {daysLeft > 0 ? `${daysLeft} days remaining` : 'Deadline passed'}
                 </p>
               </div>
@@ -97,8 +97,8 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             <div className="py-4 flex items-center gap-4">
               <TrendingUp className="w-8 h-8 text-blue-600" />
               <div>
-                <p className="text-sm text-gray-500">Community Input</p>
-                <p className="text-lg font-semibold text-gray-900">{ideaCount} ideas submitted</p>
+                <p className="text-muted-foreground">Community Input</p>
+                <p className="font-semibold text-foreground">{ideaCount} ideas submitted</p>
               </div>
             </div>
           </div>

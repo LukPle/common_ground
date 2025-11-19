@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const Header = () => {
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center py-3">
           <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
@@ -15,10 +15,10 @@ export const Header = () => {
               priority
             />
             <div>
-              <h1 className="text-l font-semibold text-gray-900">
+              <h1 className="text-l font-semibold text-foreground">
                 Common Ground
               </h1>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Collaborative Citizen Participation
               </p>
             </div>

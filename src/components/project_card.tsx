@@ -1,7 +1,8 @@
-import React from 'react';
-import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Calendar, ChevronRight, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
-import { ChevronRight, Lightbulb, Calendar } from 'lucide-react';
+import Link from 'next/link';
 import { Project } from '../types/project';
 
 interface ProjectCardProps {
@@ -11,7 +12,7 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Link href={`/projects/${project.reference}`} className="block group">
-      <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden transition-all duration-300 border border-gray-100">
+      <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 border-border hover:shadow-md">
         <div className="relative h-48 overflow-hidden">
           <Image
             src={project.image}
@@ -21,44 +22,42 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           />
 
           <div className="absolute top-4 left-4">
-            <span className="bg-black/30 backdrop-blur-lg text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/30">
+            <Badge variant="secondary" className="bg-black/30 backdrop-blur-lg text-white border-white/30 hover:bg-black/40">
               {project.category}
-            </span>
+            </Badge>
           </div>
         </div>
 
-        <div className="flex flex-col flex-grow py-4">
-          <div className="px-6">
-            <h3 className="font-semibold text-gray-900 mb-2">
-              {project.title}
-            </h3>
+        <CardContent>
+          <h3 className="font-medium text-foreground mb-2">
+            {project.title}
+          </h3>
 
-            <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
-              {project.short_description}
-            </p>
-          </div>
+          <p className="text-muted-foreground text-sm mb-0 line-clamp-2">
+            {project.short_description}
+          </p>
+        </CardContent>
 
-          <div className="mt-auto px-6 flex items-center justify-between pt-4 border-t border-gray-100">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <div className="flex items-center gap-1.5" title="Ideas Submitted">
-                <Lightbulb className="w-4 h-4" />
-                <span>{project.idea_count}</span>
-              </div>
-              <div className="flex items-center gap-1.5" title="Submission Deadline">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {new Date(project.deadline).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                </span>
-              </div>
+        <CardFooter className="justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5" title="Ideas Submitted">
+              <Lightbulb className="w-4 h-4" />
+              <span>{project.idea_count}</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-all" />
+            <div className="flex items-center gap-1.5" title="Submission Deadline">
+              <Calendar className="w-4 h-4" />
+              <span>
+                {new Date(project.deadline).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
+          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all" />
+        </CardFooter>
+      </Card>
     </Link>
   );
 };
