@@ -116,8 +116,22 @@ export default async function About() {
                       className="rounded-full object-cover shadow-lg"
                     />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{member.name}</h3>
-                  <p className="text-sm font-medium text-blue-600 mb-3">{member.role}</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
+                  <p className="text-sm font-medium text-blue-600 mb-4">{member.role}</p>
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center mb-4 opacity-85 hover:opacity-100 transition-opacity"
+                    aria-label={`${member.name} on LinkedIn`}
+                  >
+                    <Image
+                      src="/images/linkedin.svg"
+                      alt="LinkedIn"
+                      width={20}
+                      height={20}
+                    />
+                  </a>
                   <p className="text-sm text-gray-600 leading-relaxed">{member.description}</p>
                 </div>
               </div>

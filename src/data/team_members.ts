@@ -2,39 +2,24 @@ import { TeamMember } from "../types/team_member";
 
 export const teamMembers: TeamMember[] = [
   {
-    name: "Anna Riese",
-    role: "Head of Ideation",
-    description: "Getting people excited about ideas.",
-    image: "images/anna.png"
-  },
-  {
-    name: "Bernard Mulder",
-    role: "Head of Team Spirit",
-    description: "Passionate about connecting citizens with local government and fostering meaningful dialogue.",
-    image: "images/bernard.png"
-  },
-  {
-    name: "Jannik Michaelis",
-    role: "Head of Happiness",
-    description: "Enabling communities to contribute meaningful solutions to complex urban planning problems.",
-    image: "images/jannik.png"
-  },
-  {
     name: "Lukas Plenk",
-    role: "Designer and Developer",
-    description: "Empowering citizens to express their voices and build their city together as a community.",
-    image: "images/lukas.png"
+    role: "Business & Tech",
+    description: "Leading product strategy, business development, and overall technical direction.",
+    linkedin: "https://www.linkedin.com/in/lukasplenk/",
+    image: "images/lukas.webp"
   },
   {
-    name: "Oscar Rajantie",
-    role: "Head of Good Vibes",
-    description: "Driving sustainable development and innovation in communities.",
-    image: "images/oscar.png"
+    name: "Paul Walter",
+    role: "Software Engineering",
+    description: "Responsible for system architecture, implementation, and AI-powered solutions.",
+    linkedin: "https://www.linkedin.com/in/paul-walter-74009224b/",
+    image: "images/paul.webp"
   },
   {
     name: "Raphael Wennmacher",
-    role: "Designer and Developer",
-    description: "Connecting citizens with local government and fostering meaningful dialogue.",
-    image: "images/raphael.png"
+    role: "Product Design",
+    description: "Designing user experiences that align business goals and technical requirements.",
+    linkedin: "https://www.linkedin.com/in/raphael-wennmacher/",
+    image: "images/raffi.webp"
   },
 ];
