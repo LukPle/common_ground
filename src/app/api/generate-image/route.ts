@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     
     Remember: This is an ENHANCEMENT of the provided image, not a new creation from scratch.`;
 
-    const model = 'gemini-2.5-flash-image';
+    const model = 'gemini-3-pro-image-preview';
 
     const parts: any[] = [];
 
