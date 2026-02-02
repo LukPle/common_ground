@@ -115,7 +115,7 @@ export default async function About() {
             Making change happen
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Connecting citizens and cities on a single shared platform to shape the neighbourhoods of tomorrow. <span className="text-gray-900 font-semibold">This is Common Ground.</span>
+            Connecting citizens and cities to shape the neighbourhoods of tomorrow. <span className="text-gray-900 font-semibold">This is Common Ground.</span>
           </p>
         </div>
 
