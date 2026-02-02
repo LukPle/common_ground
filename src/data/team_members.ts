@@ -18,7 +18,7 @@ export const teamMembers: TeamMember[] = [
   {
     name: "Raphael Wennmacher",
     role: "Product Design",
-    description: "Designing user experiences that align business goals and technical requirements.",
+    description: "Designing thoughtful and user-centered experiences to lower barriers for participation.",
     linkedin: "https://www.linkedin.com/in/raphael-wennmacher/",
     image: "images/raffi.webp"
   },
