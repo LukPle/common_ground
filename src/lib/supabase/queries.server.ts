@@ -6,7 +6,7 @@ import { createClient as createServerClient } from './server';
 
 export async function fetchProjects(): Promise<Project[]> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: projects, error } = await supabase.rpc('get_projects_with_idea_counts');
 
   if (error) {
@@ -18,7 +18,7 @@ export async function fetchProjects(): Promise<Project[]> {
 
 export async function fetchProjectById(id: string): Promise<Project | null> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: project, error } = await supabase.from('projects').select('*').eq('reference', id).single();
 
   if (error) {
@@ -51,7 +51,7 @@ export async function fetchProjectIds(): Promise<{ reference: string }[]> {
 
 export async function fetchCompletedProjectsCount(): Promise<number> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const now = new Date().toISOString();
 
@@ -70,7 +70,7 @@ export async function fetchCompletedProjectsCount(): Promise<number> {
 
 export async function fetchIdeaCountForProject(projectReference: string): Promise<number> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { count, error } = await supabase
     .from('ideas')
@@ -87,7 +87,7 @@ export async function fetchIdeaCountForProject(projectReference: string): Promis
 
 export async function fetchIdeasForProject(projectReference: string): Promise<Idea[]> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: ideas, error } = await supabase
     .from('ideas')
     .select('*')
@@ -103,7 +103,7 @@ export async function fetchIdeasForProject(projectReference: string): Promise<Id
 
 export async function fetchIdeaById(id: number): Promise<Idea | null> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: idea, error } = await supabase
     .from('ideas')
     .select('*')
@@ -141,7 +141,7 @@ export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId:
 
 export async function fetchTotalIdeaCount(): Promise<number> {
   noStore();
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const { count, error } = await supabase
     .from('ideas')

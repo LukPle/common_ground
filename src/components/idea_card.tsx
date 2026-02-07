@@ -13,7 +13,7 @@ export const IdeaCard = ({ idea }: IdeaCardProps) => {
       href={`/projects/${idea.project_reference}/ideas/${idea.id}`}
       className="block group"
     >
-      <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow transition-all duration-300 border border-gray-100 group">
         <div className="relative h-48 overflow-hidden">
           {idea.generated_image ? (
             <Image

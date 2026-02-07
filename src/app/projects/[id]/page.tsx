@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Clock, Lightbulb, TrendingUp, Users } from 'lucide-react';
+import { ArrowRight, Check, Clock, Lightbulb, MapPin, TrendingUp, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -17,10 +17,12 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const projectDataPromise = fetchProjectById(params.id);
-  const ideaCountPromise = fetchIdeaCountForProject(params.id);
-  const ideasPromise = fetchIdeasForProject(params.id);
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
+  const projectDataPromise = fetchProjectById(id);
+  const ideaCountPromise = fetchIdeaCountForProject(id);
+  const ideasPromise = fetchIdeasForProject(id);
 
   const [project, ideaCount, ideas] = await Promise.all([
     projectDataPromise,
@@ -108,9 +110,15 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             {/* Full Description */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Project</h2>
-              <p className="text-gray-600 leading-relaxed text-base">
+              <p className="text-gray-600 leading-relaxed text-base mb-4">
                 {project.full_description}
               </p>
+              {project.address && (
+                <div className="flex items-start gap-2 text-gray-600">
+                  <MapPin className="w-4 h-4 flex-shrink-0 text-gray-600 font-medium mt-1" />
+                  <span>{project.address}</span>
+                </div>
+              )}
             </div>
 
             {/* Limitations */}

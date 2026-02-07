@@ -1,7 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
+import { Calendar, ChevronRight, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
-import { ChevronRight, Lightbulb, Calendar } from 'lucide-react';
+import Link from 'next/link';
 import { Project } from '../types/project';
 
 interface ProjectCardProps {
@@ -11,7 +10,7 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Link href={`/projects/${project.reference}`} className="block group">
-      <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 border border-gray-100">
+      <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow transition-all duration-300 border border-gray-100">
         <div className="relative h-48 overflow-hidden">
           <Image
             src={project.image}

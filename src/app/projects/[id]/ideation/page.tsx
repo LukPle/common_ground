@@ -2,7 +2,7 @@
 
 import { ArrowRight, ChevronDown, CircleCheck, CircleCheckBig, ImageIcon, Lightbulb, Loader2, RotateCw, Send, Share2, Sparkles, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Breadcrumbs } from '../../../../components/breadcrumbs';
 import { Footer } from '../../../../components/footer';
 import { Header } from '../../../../components/header';
@@ -12,7 +12,9 @@ import { fetchProjectByIdClient } from '../../../../lib/supabase/queries.client'
 import { LimitationCheck } from '../../../../types/limitation_check';
 import { Project } from '../../../../types/project';
 
-export default function ProjectIdeationPage({ params }: { params: { id: string } }) {
+export default function ProjectIdeationPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+
   const [idea, setIdea] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
   useEffect(() => {
     const getProjectData = async () => {
       setIsLoading(true);
-      const fetchedProject = await fetchProjectByIdClient(params.id);
+      const fetchedProject = await fetchProjectByIdClient(id);
 
       if (!fetchedProject) {
         setPageError('Project not found. It may have been moved or deleted.');
@@ -61,7 +63,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
       setIsLoading(false);
     };
     getProjectData();
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -254,7 +256,7 @@ export default function ProjectIdeationPage({ params }: { params: { id: string }
                 <div className="text-center mb-16">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"><Lightbulb className="w-8 h-8 text-blue-600" /></div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">Craft Your Idea</h1>
-                  <p className="text-gray-600">Create and share your vision to enhance the {project.title}</p>
+                  <p className="text-gray-600">Create and share your vision for {project.title}</p>
                 </div>
 
                 <div>

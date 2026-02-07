@@ -72,7 +72,7 @@ export default async function About() {
     },
     {
       title: "Guest Bubble",
-      description: "Only the 'usual suspects' participate. Results are rarely representative."
+      description: "Only the 'usual suspects' participate due to high barriers. Results are rarely representative."
     },
     {
       title: "Tool Jungle",
@@ -142,7 +142,7 @@ export default async function About() {
           <div className="md:col-span-1 md:col-start-3 md:row-start-1 h-full">
             <div className="flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="flex flex-1 items-center px-8 py-6">
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-6">
                   <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-full flex-shrink-0">
                     <Lightbulb className="w-6 h-6 text-blue-600" strokeWidth={2} />
                   </div>
@@ -157,10 +157,10 @@ export default async function About() {
                 </div>
               </div>
 
-              <div className="h-px w-full bg-gray-100" />
+              <div className="h-px mx-8 bg-gray-100" />
 
               <div className="flex flex-1 items-center px-8 py-6">
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-6">
                   <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-full flex-shrink-0">
                     <BarChart3 className="w-6 h-6 text-blue-600" strokeWidth={2} />
                   </div>

@@ -1,5 +1,9 @@
 import { Database } from './supabase';
 
-export type Project = Database['public']['Tables']['projects']['Row'] & {
-  idea_count?: number;
+export type Project = Omit<Database['public']['Tables']['projects']['Row'], 'location'> & {
+  idea_count: number;
+  location_geojson: {
+    type: string;
+    coordinates: number[];
+  } | null;
 };
