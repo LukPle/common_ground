@@ -11,9 +11,11 @@ export async function generateStaticParams() {
   return ids;
 }
 
-export default async function IdeaDetailPage({ params }: { params: { id: string; ideaId: string } }) {
-  const ideaDataPromise = fetchIdeaById(Number(params.ideaId));
-  const projectDataPromise = fetchProjectById(params.id);
+export default async function IdeaDetailPage({ params }: { params: Promise<{ id: string; ideaId: string }> }) {
+  const { id, ideaId } = await params;
+
+  const ideaDataPromise = fetchIdeaById(Number(ideaId));
+  const projectDataPromise = fetchProjectById(id);
 
   const [idea, project] = await Promise.all([ideaDataPromise, projectDataPromise]);
 
