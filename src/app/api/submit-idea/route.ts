@@ -1,16 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
-import { Database } from '../../../types/supabase';
+import { Database } from '@/types/supabase';
 
 type NewIdea = Database['public']['Tables']['ideas']['Insert'];
+
+const USER_ID_COOKIE = 'anonymous-user-id';
 
 interface SubmitIdeaRequestBody {
   title: string;
   description: string;
   generatedImage: string;
   project_reference: string;
-  user_id: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -20,8 +21,9 @@ export async function POST(request: NextRequest) {
       description,
       generatedImage,
       project_reference,
-      user_id
     }: SubmitIdeaRequestBody = await request.json();
+
+    const user_id = request.cookies.get(USER_ID_COOKIE)?.value ?? 'anonymous';
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
       throw new Error("Server configuration error: Missing Supabase credentials.");
@@ -36,15 +38,10 @@ export async function POST(request: NextRequest) {
     if (!base64Data) throw new Error("Invalid image data format.");
 
     const initialBuffer = Buffer.from(base64Data, 'base64');
-
-    console.log(`Optimizing image... Original size: ${Math.round(initialBuffer.length / 1024)} KB`);
-
     const optimizedBuffer = await sharp(initialBuffer)
       .resize(1280)
       .webp({ quality: 80 })
       .toBuffer();
-
-    console.log(`Optimization complete. New size: ${Math.round(optimizedBuffer.length / 1024)} KB`);
 
     const fileName = `idea-${project_reference}-${title}-${Date.now()}.webp`;
     const mimeType = 'image/webp';
@@ -88,14 +85,14 @@ export async function POST(request: NextRequest) {
       throw new Error("Failed to retrieve the new idea's ID after insertion.");
     }
 
-    console.log('Successfully saved idea to database with ID:', newIdea.id);
     return NextResponse.json({
       message: "Idea submitted successfully!",
       ideaId: newIdea.id
     }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in /api/submit-idea:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

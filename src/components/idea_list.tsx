@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Idea } from '../types/idea';
-import { IdeaCard } from './idea_card';
+import { Idea } from '@/types/idea';
+import { IdeaCard } from '@/components/idea_card';
 
 const INITIAL_DISPLAY_COUNT = 6;
 const IDEAS_TO_LOAD = 6;

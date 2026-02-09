@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { LimitationCheck } from '../types/limitation_check';
+import React, { useState } from 'react';
+import { LimitationCheck } from '@/types/limitation_check';
 import { CircleCheck, XCircle, CircleQuestionMark, ChevronDown } from 'lucide-react';
 
 export const LimitationCheckCard = ({ result }: { result: LimitationCheck }) => {

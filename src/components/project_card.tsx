@@ -1,7 +1,7 @@
 import { Calendar, ChevronRight, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Project } from '../types/project';
+import { Project } from '@/types/project';
 
 interface ProjectCardProps {
   project: Project;

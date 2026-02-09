@@ -10,8 +10,6 @@ export function middleware(request: NextRequest) {
 
   if (!userId) {
     userId = uuidv4();
-    console.log(`New anonymous user identified: ${userId}`);
-
     response.cookies.set(USER_ID_COOKIE, userId, {
       httpOnly: true,
       path: '/',

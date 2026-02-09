@@ -1,20 +1,28 @@
+import { getGeminiApiKey } from '@/lib/env-config';
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-  console.error("FATAL: GEMINI_API_KEY environment variable is not set.");
+interface AnalyzeIdeaBody {
+  prompt?: string;
+  limitations?: string[];
+  projectTitle?: string;
+  projectDescription?: string;
 }
 
 export async function POST(request: NextRequest) {
+  let body: AnalyzeIdeaBody = {};
   try {
-    if (!apiKey) {
-      throw new Error("Server is missing GEMINI_API_KEY configuration.");
-    }
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
 
-    const { prompt, limitations, projectTitle, projectDescription } = await request.json();
+  const { prompt, limitations = [], projectTitle, projectDescription } = body;
+  const limitationsArray = Array.isArray(limitations) ? limitations : [];
 
-    if (!prompt || !limitations || !Array.isArray(limitations) || !projectTitle || !projectDescription) {
+  try {
+    const apiKey = getGeminiApiKey();
+    if (!prompt || !projectTitle || !projectDescription) {
       return NextResponse.json({ error: 'Prompt, limitations, projectTitle, and projectDescription are required' }, { status: 400 });
     }
 
@@ -33,7 +41,7 @@ export async function POST(request: NextRequest) {
     User's Idea: "${prompt}"
 
     Project Limitations:
-    ${limitations.map(l => `- ${l}`).join('\n')}
+    ${limitationsArray.map(l => `- ${l}`).join('\n')}
 
     Your entire response MUST be a single JSON object inside a markdown code block.
     The JSON object must have three top-level keys: "title", "description", and "realityCheck".
@@ -94,12 +102,11 @@ export async function POST(request: NextRequest) {
       realityCheckResults: parsedData.realityCheck,
     });
 
-  } catch (error: any) {
-    console.error("Error in analyze-idea endpoint:", error.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error("Error in analyze-idea endpoint:", message);
 
-    const body = await request.json().catch(() => ({ prompt: '', limitations: [] }));
-
-    const fallbackResults = body.limitations.map((limitation: string) => ({
+    const fallbackResults = limitationsArray.map((limitation: string) => ({
       limitation,
       status: 'Depending',
       reasoning: 'The AI analysis could not be completed. Please review this limitation manually.'
@@ -107,9 +114,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       suggestedTitle: 'A New Vision',
-      suggestedDescription: body.prompt,
+      suggestedDescription: prompt ?? '',
       realityCheckResults: fallbackResults,
-      error: `Failed to analyze idea: ${error.message}`
+      error: `Failed to analyze idea: ${message}`
     }, { status: 500 });
   }
 }

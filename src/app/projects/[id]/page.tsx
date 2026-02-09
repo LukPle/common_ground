@@ -2,12 +2,11 @@ import { ArrowRight, Check, Clock, Lightbulb, MapPin, TrendingUp, Users } from '
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Breadcrumbs } from '../../../components/breadcrumbs';
-import { Footer } from '../../../components/footer';
-import { Header } from '../../../components/header';
-import { IdeaList } from '../../../components/idea_list';
-import { fetchIdeaCountForProject, fetchIdeasForProject, fetchProjectById, fetchProjectIds } from '../../../lib/supabase/queries.server';
-import { getProjectStatus } from '../../../lib/utils';
+import { Breadcrumbs } from '@/components/breadcrumbs';
+import { PageLayout } from '@/components/page_layout';
+import { IdeaList } from '@/components/idea_list';
+import { fetchIdeaCountForProject, fetchIdeasForProject, fetchProjectById, fetchProjectIds } from '@/lib/supabase/queries.server';
+import { getProjectStatus } from '@/lib/utils';
 
 export async function generateStaticParams() {
   const projects = await fetchProjectIds();
@@ -45,8 +44,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <PageLayout>
       <Breadcrumbs items={breadcrumbItems} />
 
       {/* Hero Section */}
@@ -158,8 +156,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
       </div>
-
-      <Footer />
-    </div>
+    </PageLayout>
   );
 }

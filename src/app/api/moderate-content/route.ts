@@ -1,11 +1,5 @@
+import { getGeminiApiKey } from '@/lib/env-config';
 import { NextRequest, NextResponse } from 'next/server';
-
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-    console.error("FATAL: GEMINI_API_KEY environment variable is not set.");
-}
-
-const API_ENDPOINT = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`;
 
 const MODERATION_THRESHOLDS = {
     'THREAT': 0.60,
@@ -20,10 +14,8 @@ const REQUESTED_ATTRIBUTES = Object.fromEntries(
 
 export async function POST(request: NextRequest) {
     try {
-        if (!apiKey) {
-            throw new Error("Server configuration error: API key is not set.");
-        }
-
+        const apiKey = getGeminiApiKey();
+        const API_ENDPOINT = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`;
         const { title, description } = await request.json();
 
         if (!title && !description) {
@@ -71,10 +63,11 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ isSafe: true }, { status: 200 });
 
-    } catch (error: any) {
-        console.error("Error in moderate-content endpoint:", error.message);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error("Error in moderate-content endpoint:", message);
         return NextResponse.json({
-            error: `Content moderation failed: ${error.message}`
+            error: `Content moderation failed: ${message}`
         }, { status: 500 });
     }
 }

@@ -1,10 +1,9 @@
 import { MegaphoneOff } from 'lucide-react';
-import { Footer } from '../components/footer';
-import { Header } from '../components/header';
-import { Hero } from '../components/hero';
-import { HowTo } from '../components/how_to';
-import { ProjectCard } from '../components/project_card';
-import { fetchProjects } from '../lib/supabase/queries.server';
+import { PageLayout } from '@/components/page_layout';
+import { Hero } from '@/components/hero';
+import { HowTo } from '@/components/how_to';
+import { ProjectCard } from '@/components/project_card';
+import { fetchProjects } from '@/lib/supabase/queries.server';
 
 export default async function Home() {
   const projects = await fetchProjects();
@@ -12,8 +11,7 @@ export default async function Home() {
   const activeProjects = projects.filter(project => new Date(project.deadline) >= now);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <PageLayout>
       <Hero />
 
       <HowTo />
@@ -45,8 +43,6 @@ export default async function Home() {
         )}
 
       </div>
-
-      <Footer />
-    </div>
+    </PageLayout>
   );
 }

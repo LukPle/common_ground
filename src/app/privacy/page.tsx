@@ -1,11 +1,8 @@
-import { Footer } from '../../components/footer';
-import { Header } from '../../components/header';
+import { PageLayout } from '@/components/page_layout';
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Header />
-
+        <PageLayout>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mb-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
@@ -62,8 +59,6 @@ export default function PrivacyPolicyPage() {
 
                 </div>
             </div>
-
-            <Footer />
-        </div>
+        </PageLayout>
     );
 }

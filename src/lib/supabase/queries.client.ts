@@ -1,5 +1,6 @@
-import { NewIdea } from '../../types/idea';
-import { Project } from '../../types/project';
+import type { Idea, NewIdea } from '@/types/idea';
+import type { Project } from '@/types/project';
+import type { PostgrestError } from '@supabase/supabase-js';
 import { createClient as createBrowserClient } from './client';
 
 export async function fetchProjectByIdClient(id: string): Promise<Project | null> {
@@ -17,7 +18,7 @@ export async function fetchProjectByIdClient(id: string): Promise<Project | null
   return project;
 }
 
-export async function createIdea(newIdea: NewIdea): Promise<{ data: any; error: any }> {
+export async function createIdea(newIdea: NewIdea): Promise<{ data: Idea | null; error: PostgrestError | null }> {
   const supabase = createBrowserClient();
   const { data, error } = await supabase
     .from('ideas')

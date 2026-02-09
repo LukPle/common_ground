@@ -1,8 +1,21 @@
+import { env } from '@/lib/env-config';
+import { Idea } from '@/types/idea';
+import { Project } from '@/types/project';
 import { createServerClient as createClientForBuild } from '@supabase/ssr';
 import { unstable_noStore as noStore } from 'next/cache';
-import { Idea } from '../../types/idea';
-import { Project } from '../../types/project';
 import { createClient as createServerClient } from './server';
+
+const noopCookies = {
+  get: () => undefined as string | undefined,
+  set: () => { },
+  remove: () => { },
+};
+
+function getBuildTimeClient() {
+  return createClientForBuild(env.supabaseUrl, env.supabaseAnonKey, {
+    cookies: noopCookies,
+  });
+}
 
 export async function fetchProjects(): Promise<Project[]> {
   noStore();
@@ -29,18 +42,7 @@ export async function fetchProjectById(id: string): Promise<Project | null> {
 }
 
 export async function fetchProjectIds(): Promise<{ reference: string }[]> {
-  const supabase = createClientForBuild(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get() { return undefined; },
-        set() { /* Do nothing */ },
-        remove() { /* Do nothing */ },
-      },
-    }
-  );
-
+  const supabase = getBuildTimeClient();
   const { data, error } = await supabase.from('projects').select('reference');
   if (error) {
     console.error('Database Error during build:', error.message);
@@ -118,12 +120,7 @@ export async function fetchIdeaById(id: number): Promise<Idea | null> {
 }
 
 export async function fetchAllProjectAndIdeaIds(): Promise<{ id: string; ideaId: string }[]> {
-  const supabase = createClientForBuild(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { get() { return undefined; }, set() { }, remove() { } } }
-  );
-
+  const supabase = getBuildTimeClient();
   const { data, error } = await supabase
     .from('ideas')
     .select('id, project_reference');

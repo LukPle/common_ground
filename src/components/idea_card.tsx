@@ -1,7 +1,7 @@
 import { Calendar, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Idea } from '../types/idea';
+import { Idea } from '@/types/idea';
 
 interface IdeaCardProps {
   idea: Idea;

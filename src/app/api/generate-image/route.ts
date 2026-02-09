@@ -1,17 +1,10 @@
+import { getGeminiApiKey } from '@/lib/env-config';
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-  console.error("FATAL: GEMINI_API_KEY environment variable is not set.");
-}
-
 export async function POST(request: NextRequest) {
   try {
-    if (!apiKey) {
-      throw new Error("Server is missing GEMINI_API_KEY configuration.");
-    }
-
+    const apiKey = getGeminiApiKey();
     const { prompt, originalImage } = await request.json();
 
     if (!prompt) {
@@ -37,14 +30,13 @@ export async function POST(request: NextRequest) {
 
     const model = 'gemini-3-pro-image-preview';
 
-    const parts: any[] = [];
+    type Part = { text?: string; inlineData?: { mimeType: string; data: string } };
+    const parts: Part[] = [];
 
     if (originalImage) {
       const imageUrl = originalImage.startsWith('/')
         ? new URL(originalImage, process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
         : new URL(originalImage);
-
-      console.log(`Fetching original image from: ${imageUrl}`);
       const imageResponse = await fetch(imageUrl);
 
       if (!imageResponse.ok) {
@@ -61,9 +53,6 @@ export async function POST(request: NextRequest) {
     parts.push({ text: enhancedPrompt });
 
     const contents = [{ role: 'user', parts }];
-
-    console.log('Sending request to Gemini...');
-
     const responseStream = await genAI.models.generateContentStream({
       model,
       contents,
@@ -86,19 +75,17 @@ export async function POST(request: NextRequest) {
     }
 
     const imageUrl = `data:${generatedMimeType};base64,${generatedImageBase64}`;
-
-    console.log('Successfully generated image as Data URL.');
-
     return NextResponse.json({
       imageUrl: imageUrl,
       message: `Image generated successfully.`
     });
 
-  } catch (error: any) {
-    console.error('Error in image generation endpoint:', error.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in image generation endpoint:', message);
 
     return NextResponse.json({
-      message: `Image generation failed: ${error.message}`,
+      message: `Image generation failed: ${message}`,
       error: 'API_ERROR'
     }, { status: 500 });
   }

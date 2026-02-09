@@ -1,10 +1,9 @@
 import { Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Breadcrumbs } from '../../../../../components/breadcrumbs';
-import { Footer } from '../../../../../components/footer';
-import { Header } from '../../../../../components/header';
-import { fetchAllProjectAndIdeaIds, fetchIdeaById, fetchProjectById } from '../../../../../lib/supabase/queries.server';
+import { Breadcrumbs } from '@/components/breadcrumbs';
+import { PageLayout } from '@/components/page_layout';
+import { fetchAllProjectAndIdeaIds, fetchIdeaById, fetchProjectById } from '@/lib/supabase/queries.server';
 
 export async function generateStaticParams() {
   const ids = await fetchAllProjectAndIdeaIds();
@@ -30,9 +29,7 @@ export default async function IdeaDetailPage({ params }: { params: Promise<{ id:
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
+    <PageLayout>
       <Breadcrumbs items={breadcrumbItems} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
@@ -78,8 +75,6 @@ export default async function IdeaDetailPage({ params }: { params: Promise<{ id:
 
         </div>
       </div>
-
-      <Footer />
-    </div>
+    </PageLayout>
   );
 }
