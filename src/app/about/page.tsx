@@ -2,7 +2,7 @@ import { AboutComparison } from '@/components/about/about_comparison';
 import { AboutMission } from '@/components/about/about_mission';
 import { AboutStatistics } from '@/components/about/about_statistics';
 import { AboutTeam } from '@/components/about/about_team';
-import { PageLayout } from '@/components/page_layout';
+import { PageLayout } from '@/components/core/page_layout';
 import {
   aboutProblems,
   aboutSolutions,

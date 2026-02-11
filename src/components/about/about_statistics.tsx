@@ -46,7 +46,7 @@ export function AboutStatistics({ stats }: AboutStatisticsProps) {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col justify-between h-full"
+            className="bg-white rounded-2xl p-8 border border-gray-150 flex flex-col justify-between h-full"
           >
             <div>
               <div className="text-3xl font-semibold mb-3 w-fit">

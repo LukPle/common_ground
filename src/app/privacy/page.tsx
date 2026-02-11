@@ -1,4 +1,4 @@
-import { PageLayout } from '@/components/page_layout';
+import { PageLayout } from '@/components/core/page_layout';
 
 export default function PrivacyPolicyPage() {
     return (

@@ -16,7 +16,7 @@ export const HowTo = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-200/75 bg-white shadow-sm">
+          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-150 bg-white">
             <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-blue-100/70 to-white"></div>
 
             <div className="relative z-10">
@@ -32,7 +32,7 @@ export const HowTo = () => {
             </div>
           </div>
 
-          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-200/75 bg-white shadow-sm">
+          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-150 bg-white">
             <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-indigo-100/70 to-white"></div>
 
             <div className="relative z-10">
@@ -48,7 +48,7 @@ export const HowTo = () => {
             </div>
           </div>
 
-          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-200/75 bg-white shadow-sm">
+          <div className="relative p-6 rounded-2xl overflow-hidden border border-gray-150 bg-white">
             <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-purple-100/70 to-white"></div>
 
             <div className="relative z-10">

@@ -1,9 +1,9 @@
+import { Breadcrumbs } from '@/components/core/breadcrumbs';
+import { PageLayout } from '@/components/core/page_layout';
+import { fetchAllProjectAndIdeaIds, fetchIdeaById, fetchProjectById } from '@/lib/supabase/queries.server';
 import { Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Breadcrumbs } from '@/components/breadcrumbs';
-import { PageLayout } from '@/components/page_layout';
-import { fetchAllProjectAndIdeaIds, fetchIdeaById, fetchProjectById } from '@/lib/supabase/queries.server';
 
 export async function generateStaticParams() {
   const ids = await fetchAllProjectAndIdeaIds();
@@ -33,7 +33,7 @@ export default async function IdeaDetailPage({ params }: { params: Promise<{ id:
       <Breadcrumbs items={breadcrumbItems} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-150 overflow-hidden">
 
           <div className="relative aspect-[16/10] w-full bg-gray-100">
             {idea.generated_image ? (
@@ -52,7 +52,7 @@ export default async function IdeaDetailPage({ params }: { params: Promise<{ id:
           <div>
             <div className="p-8 sm:p-10 space-y-8">
               <div className="space-y-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
                   {idea.title}
                 </h1>
                 {idea.description && (

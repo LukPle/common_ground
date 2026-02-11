@@ -1,13 +1,13 @@
 'use client';
 
-import { Breadcrumbs } from '@/components/breadcrumbs';
+import { Breadcrumbs } from '@/components/core/breadcrumbs';
+import { PageLayout } from '@/components/core/page_layout';
 import { AddDetailsStep } from '@/components/ideation/add_details_step';
 import { FullscreenImage } from '@/components/ideation/full_screen_image';
 import { ImageStep } from '@/components/ideation/image_generation_step';
 import { RealityCheckStep } from '@/components/ideation/reality_check_step';
 import { Step } from '@/components/ideation/step';
 import { SubmitSection } from '@/components/ideation/submit_section';
-import { PageLayout } from '@/components/page_layout';
 import { useIdeationState } from '@/hooks/ideation_hooks';
 import { Lightbulb, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -108,8 +108,8 @@ export default function ProjectIdeationPage({
         <main className="flex flex-col flex-grow">
           <Breadcrumbs items={breadcrumbItems} />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 sm:p-10">
+          <div className="max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
+            <div className="bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

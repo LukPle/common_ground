@@ -1,5 +1,5 @@
-import { BarChart3, Check, Lightbulb } from 'lucide-react';
 import { aboutUsps } from '@/data/about';
+import { BarChart3, Check, Lightbulb } from 'lucide-react';
 
 interface AboutMissionProps {
   totalIdeas: number;
@@ -69,7 +69,7 @@ export function AboutMission({
         </div>
 
         <div className="md:col-span-1 md:col-start-3 md:row-start-1 h-full">
-          <div className="flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex flex-col h-full bg-white rounded-2xl border border-gray-150 overflow-hidden">
             <div className="flex flex-1 items-center px-8 py-6">
               <div className="flex items-center gap-6">
                 <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-full flex-shrink-0">

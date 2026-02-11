@@ -1,5 +1,5 @@
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
+import { Footer } from '@/components/core/footer';
+import { Header } from '@/components/core/header';
 
 interface PageLayoutProps {
   children: React.ReactNode;

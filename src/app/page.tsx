@@ -1,9 +1,9 @@
-import { MegaphoneOff } from 'lucide-react';
-import { PageLayout } from '@/components/page_layout';
-import { Hero } from '@/components/hero';
-import { HowTo } from '@/components/how_to';
-import { ProjectCard } from '@/components/project_card';
+import { PageLayout } from '@/components/core/page_layout';
+import { ProjectCard } from '@/components/core/project_card';
+import { Hero } from '@/components/landing/hero';
+import { HowTo } from '@/components/landing/how_to';
 import { fetchProjects } from '@/lib/supabase/queries.server';
+import { MegaphoneOff } from 'lucide-react';
 
 export default async function Home() {
   const projects = await fetchProjects();

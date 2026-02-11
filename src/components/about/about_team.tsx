@@ -1,6 +1,6 @@
+import type { TeamMember } from '@/types/team_member';
 import { Building2 } from 'lucide-react';
 import Image from 'next/image';
-import type { TeamMember } from '@/types/team_member';
 
 interface AboutTeamProps {
   teamMembers: TeamMember[];
@@ -26,7 +26,7 @@ export function AboutTeam({ teamMembers }: AboutTeamProps) {
           {teamMembers.map((member, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-6 overflow-hidden shadow border border-gray-100"
+              className="bg-white rounded-2xl p-6 overflow-hidden border border-gray-150"
             >
               <div className="text-center">
                 <div className="w-24 h-24 mx-auto mb-4 relative">
