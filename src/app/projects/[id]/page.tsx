@@ -1,8 +1,8 @@
 import { Breadcrumbs } from '@/components/core/breadcrumbs';
-import { IdeaCard } from '@/components/core/idea_card';
+import { Card } from '@/components/core/card';
 import { PageLayout } from '@/components/core/page_layout';
 import { fetchIdeaCountForProject, fetchIdeasForProject, fetchProjectById, fetchProjectIds } from '@/lib/supabase/queries.server';
-import { getProjectStatus } from '@/lib/utils';
+import { getProjectStatus, getRelativeTime } from '@/lib/utils';
 import { ArrowRight, Check, Clock, Lightbulb, MapPin, TrendingUp, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -180,7 +180,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ideas.map((idea) => (
-                    <IdeaCard key={idea.id} idea={idea} />
+                    <Card
+                      key={idea.id}
+                      href={`/projects/${idea.project_reference}/ideas/${idea.id}`}
+                      imageSrc={idea.generated_image}
+                      imageAlt={idea.title}
+                      leadingCaption="Anonymous User"
+                      trailingCaption={getRelativeTime(idea.created_at, true)}
+                      title={idea.title}
+                      subtitle={idea.description}
+                    />
                   ))}
                 </div>
               </div>

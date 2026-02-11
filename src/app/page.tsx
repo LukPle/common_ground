@@ -1,8 +1,9 @@
+import { Card } from '@/components/core/card';
 import { PageLayout } from '@/components/core/page_layout';
-import { ProjectCard } from '@/components/core/project_card';
 import { Hero } from '@/components/landing/hero';
 import { HowTo } from '@/components/landing/how_to';
 import { fetchProjects } from '@/lib/supabase/queries.server';
+import { getRelativeTime } from '@/lib/utils';
 import { MegaphoneOff } from 'lucide-react';
 
 export default async function Home() {
@@ -29,13 +30,25 @@ export default async function Home() {
         {activeProjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {activeProjects.map(project => (
-              <ProjectCard key={project.id} project={project} />
+              <Card
+                key={project.id}
+                href={`/projects/${project.reference}`}
+                imageSrc={project.image}
+                imageAlt={project.title}
+                badge={`${getRelativeTime(project.deadline)} left`}
+                leadingCaption={project.category}
+                trailingCaption={`${project.idea_count} ${project.idea_count === 1 ? 'Idea' : 'Ideas'}`}
+                title={project.title}
+                subtitle={project.short_description}
+              />
             ))}
           </div>
         ) : (
           <div className="text-center bg-white border-2 border-dashed border-gray-200 rounded-2xl p-12">
             <MegaphoneOff className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-semibold text-gray-900">No Active Projects Right Now</h3>
+            <h3 className="mt-4 text-lg font-semibold text-gray-900">
+              No Active Projects Right Now
+            </h3>
             <p className="mt-1 text-gray-500">
               New community initiatives will be posted here, please check back soon.
             </p>
