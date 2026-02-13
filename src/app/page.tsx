@@ -1,9 +1,8 @@
-import { Card } from '@/components/core/card';
 import { PageLayout } from '@/components/core/page_layout';
-import { Hero } from '@/components/landing/hero';
-import { HowTo } from '@/components/landing/how_to';
+import { Hero } from '@/components/landing-page/hero';
+import { HowTo } from '@/components/landing-page/how_to';
+import { ProjectCard } from '@/components/landing-page/project_card';
 import { fetchProjects } from '@/lib/supabase/queries.server';
-import { getRelativeTime } from '@/lib/utils';
 import { MegaphoneOff } from 'lucide-react';
 
 export default async function Home() {
@@ -30,17 +29,7 @@ export default async function Home() {
         {activeProjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {activeProjects.map(project => (
-              <Card
-                key={project.id}
-                href={`/projects/${project.reference}`}
-                imageSrc={project.image}
-                imageAlt={project.title}
-                badge={`${getRelativeTime(project.deadline)} left`}
-                leadingCaption={project.category}
-                trailingCaption={`${project.idea_count} ${project.idea_count === 1 ? 'Idea' : 'Ideas'}`}
-                title={project.title}
-                subtitle={project.short_description}
-              />
+              <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         ) : (

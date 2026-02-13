@@ -1,8 +1,8 @@
 import { Breadcrumbs } from '@/components/core/breadcrumbs';
-import { Card } from '@/components/core/card';
 import { PageLayout } from '@/components/core/page_layout';
+import { IdeaCard } from '@/components/project/idea_card';
 import { fetchIdeaCountForProject, fetchIdeasForProject, fetchProjectById, fetchProjectIds } from '@/lib/supabase/queries.server';
-import { getProjectStatus, getRelativeTime } from '@/lib/utils';
+import { getProjectStatus } from '@/lib/utils';
 import { ArrowRight, Check, Clock, Lightbulb, MapPin, TrendingUp, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -73,47 +73,47 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
+      {/* At-a-Glance Info Section */}
+      <div className="w-full border-b border-gray-150 mb-4 md:mb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3">
+
+            <div className="py-6 px-4 md:px-8 flex items-center gap-4">
+              <Users className="w-8 h-8 text-gray-900" />
+              <div>
+                <p className="text-sm text-gray-600">Category</p>
+                <p className="text-lg font-semibold text-gray-900">{project.category}</p>
+              </div>
+            </div>
+
+            <div className="p-6 px-4 md:px-8 flex items-center gap-4 border-y sm:border-y-0 sm:border-x border-gray-150">
+              <Clock className={`w-8 h-8 ${daysLeft > 30 ? 'text-emerald-600' : daysLeft > 7 ? 'text-amber-600' : 'text-red-600'}`} />
+              <div>
+                <p className="text-sm text-gray-600">Deadline</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {daysLeft > 0 ? `${daysLeft} days remaining` : 'Deadline passed'}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 px-4 md:px-8 flex items-center gap-4">
+              <TrendingUp className="w-8 h-8 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-600">Community Input</p>
+                <p className="text-lg font-semibold text-gray-900">{ideaCount} {ideaCount === 1 ? 'idea' : 'ideas'} submitted</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto pb-12 sm:pb-16">
 
-        {/* At-a-Glance Info Section */}
-        <div className="w-full border-b border-gray-150 mb-4 md:mb-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-3">
-
-              <div className="py-6 px-4 md:px-8 flex items-center gap-4">
-                <Users className="w-8 h-8 text-gray-900" />
-                <div>
-                  <p className="text-sm text-gray-600">Category</p>
-                  <p className="text-lg font-semibold text-gray-900">{project.category}</p>
-                </div>
-              </div>
-
-              <div className="p-6 px-4 md:px-8 flex items-center gap-4 border-y sm:border-y-0 sm:border-x border-gray-150">
-                <Clock className={`w-8 h-8 ${daysLeft > 30 ? 'text-emerald-600' : daysLeft > 7 ? 'text-amber-600' : 'text-red-600'}`} />
-                <div>
-                  <p className="text-sm text-gray-600">Deadline</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {daysLeft > 0 ? `${daysLeft} days remaining` : 'Deadline passed'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 px-4 md:px-8 flex items-center gap-4">
-                <TrendingUp className="w-8 h-8 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Community Input</p>
-                  <p className="text-lg font-semibold text-gray-900">{ideaCount} {ideaCount === 1 ? 'idea' : 'ideas'} submitted</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
         <div className="p-4 md:p-8 space-y-12 md:space-y-16">
           {/* About Section */}
-          <div>
+          <div id="about" className="scroll-mt-24">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">About This Project</h2>
             <p className="text-gray-600 leading-relaxed text-base mb-4">
               {project.full_description}
@@ -128,7 +128,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
           {/* Limitations */}
           {project.limitations && project.limitations.length > 0 && (
-            <div>
+            <div id="limitations" className="scroll-mt-24">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Limitations</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {project.limitations.map((limitation, idx) => (
@@ -142,7 +142,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           )}
 
           {/* Get Active */}
-          <div>
+          <div id="get-active" className="scroll-mt-24">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Get Active</h3>
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 md:p-8 mb-8">
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
@@ -180,16 +180,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ideas.map((idea) => (
-                    <Card
-                      key={idea.id}
-                      href={`/projects/${idea.project_reference}/ideas/${idea.id}`}
-                      imageSrc={idea.generated_image}
-                      imageAlt={idea.title}
-                      leadingCaption="Anonymous User"
-                      trailingCaption={getRelativeTime(idea.created_at, true)}
-                      title={idea.title}
-                      subtitle={idea.description}
-                    />
+                    <IdeaCard key={idea.id} idea={idea} />
                   ))}
                 </div>
               </div>
