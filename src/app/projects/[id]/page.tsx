@@ -58,15 +58,17 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
 
-        <div className="absolute inset-0 flex flex-col justify-end pb-16">
-          <div className="text-white max-w-7xl px-4 md:px-8 mx-auto w-full">
+        <div className="absolute inset-0 flex flex-col justify-end pb-8 md:pb-16">
+          <div className="text-white max-w-7xl px-4 md:px-8 mx-auto w-full flex flex-col gap-4 items-start">
             <span className="bg-white/20 backdrop-blur-2xl border border-white/20 px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
               {status}
             </span>
-            <h1 className="text-5xl md:text-6xl font-black mt-4 drop-shadow-lg">
+
+            <h1 className="text-4xl md:text-5xl font-black drop-shadow-lg leading-tight">
               {project.title}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-3xl mt-2 drop-shadow-md">
+
+            <p className="text-base md:text-xl text-white/90 drop-shadow-md">
               {project.short_description}
             </p>
           </div>
@@ -76,7 +78,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       {/* At-a-Glance Info Section */}
       <div className="w-full border-b border-gray-150 mb-4 md:mb-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-3">
 
             <div className="py-6 px-4 md:px-8 flex items-center gap-4">
               <Users className="w-8 h-8 text-gray-900" />
@@ -86,7 +88,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               </div>
             </div>
 
-            <div className="p-6 px-4 md:px-8 flex items-center gap-4 border-y sm:border-y-0 sm:border-x border-gray-150">
+            <div className="p-6 px-4 md:px-8 flex items-center gap-4 border-y md:border-y-0 md:border-x border-gray-150">
               <Clock className={`w-8 h-8 ${daysLeft > 30 ? 'text-emerald-600' : daysLeft > 7 ? 'text-amber-600' : 'text-red-600'}`} />
               <div>
                 <p className="text-sm text-gray-600">Deadline</p>
@@ -144,7 +146,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           {/* Get Active */}
           <div id="get-active" className="scroll-mt-24">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Get Active</h3>
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 md:p-8 mb-8">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 md:p-8 mb-8">
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
 
                 <div className="flex-shrink-0">
