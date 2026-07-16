@@ -27,11 +27,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Environment Setup
 
-To enable AI image generation, add your Gemini API key to your environment:
+Add these to `.env.local` (and to your host’s env vars in production):
 
 ```bash
 GEMINI_API_KEY=your_api_key_here
+ACCESS_CODE=abc123
 ```
+
+`ACCESS_CODE` is a 6-character letter/digit code required before using the ideation page and its AI APIs for the purpose of locking API calls from random visitors. Leave it unset locally if you want the gate disabled during development.
 
 ## Technology Stack
 

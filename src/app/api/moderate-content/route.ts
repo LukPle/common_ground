@@ -1,3 +1,4 @@
+import { hasValidAccess, unauthorizedAccessResponse } from '@/lib/access';
 import { getGeminiApiKey } from '@/lib/env-config';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,6 +14,10 @@ const REQUESTED_ATTRIBUTES = Object.fromEntries(
 );
 
 export async function POST(request: NextRequest) {
+    if (!hasValidAccess(request)) {
+        return unauthorizedAccessResponse();
+    }
+
     try {
         const apiKey = getGeminiApiKey();
         const API_ENDPOINT = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`;

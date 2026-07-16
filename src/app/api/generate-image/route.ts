@@ -1,8 +1,13 @@
+import { hasValidAccess, unauthorizedAccessResponse } from '@/lib/access';
 import { getGeminiApiKey } from '@/lib/env-config';
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  if (!hasValidAccess(request)) {
+    return unauthorizedAccessResponse();
+  }
+
   try {
     const apiKey = getGeminiApiKey();
     const { prompt, originalImage } = await request.json();

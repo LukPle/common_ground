@@ -2,6 +2,7 @@
 
 import { Breadcrumbs } from '@/components/core/breadcrumbs';
 import { PageLayout } from '@/components/core/page_layout';
+import { AccessGate } from '@/components/ideation/access_gate';
 import { AddDetailsStep } from '@/components/ideation/add_details_step';
 import { FullscreenImage } from '@/components/ideation/full_screen_image';
 import { ImageStep } from '@/components/ideation/image_generation_step';
@@ -11,7 +12,7 @@ import { SubmitSection } from '@/components/ideation/submit_section';
 import { useIdeationState } from '@/hooks/ideation_hooks';
 import { Lightbulb, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 
 export default function ProjectIdeationPage({
   params,
@@ -20,6 +21,35 @@ export default function ProjectIdeationPage({
 }) {
   const { id } = use(params);
   const state = useIdeationState(id);
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkAccess() {
+      try {
+        const response = await fetch('/api/access');
+        const data = (await response.json()) as { unlocked?: boolean };
+        if (!cancelled) {
+          setIsUnlocked(Boolean(data.unlocked));
+        }
+      } catch {
+        if (!cancelled) {
+          setIsUnlocked(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setAccessChecked(true);
+        }
+      }
+    }
+
+    void checkAccess();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const {
     project,
@@ -67,7 +97,7 @@ export default function ProjectIdeationPage({
     ]
     : [];
 
-  if (isLoading) {
+  if (isLoading || !accessChecked) {
     return (
       <PageLayout>
         <div className="flex flex-grow items-center justify-center">
@@ -98,6 +128,21 @@ export default function ProjectIdeationPage({
     return (
       <PageLayout>
         <div>Project could not be loaded.</div>
+      </PageLayout>
+    );
+  }
+
+  if (!isUnlocked) {
+    return (
+      <PageLayout>
+        <main className="flex flex-col flex-grow">
+          <Breadcrumbs items={breadcrumbItems} />
+          <div className="max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
+            <div className="bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
+              <AccessGate onUnlocked={() => setIsUnlocked(true)} />
+            </div>
+          </div>
+        </main>
       </PageLayout>
     );
   }

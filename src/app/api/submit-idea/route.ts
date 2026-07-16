@@ -1,3 +1,4 @@
+import { hasValidAccess, unauthorizedAccessResponse } from '@/lib/access';
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
@@ -15,6 +16,10 @@ interface SubmitIdeaRequestBody {
 }
 
 export async function POST(request: NextRequest) {
+  if (!hasValidAccess(request)) {
+    return unauthorizedAccessResponse();
+  }
+
   try {
     const {
       title,

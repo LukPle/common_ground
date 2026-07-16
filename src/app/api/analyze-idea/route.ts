@@ -1,3 +1,4 @@
+import { hasValidAccess, unauthorizedAccessResponse } from '@/lib/access';
 import { getGeminiApiKey } from '@/lib/env-config';
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,6 +11,10 @@ interface AnalyzeIdeaBody {
 }
 
 export async function POST(request: NextRequest) {
+  if (!hasValidAccess(request)) {
+    return unauthorizedAccessResponse();
+  }
+
   let body: AnalyzeIdeaBody = {};
   try {
     body = await request.json();
