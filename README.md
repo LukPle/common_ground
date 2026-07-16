@@ -1,60 +1,61 @@
 # Common Ground
 
-A collaborative urban planning platform that brings communities together to envision and design their shared future through AI-enhanced visualization and inclusive participation.
+**Common Ground - Connect citizens and cities on urban planing proposals**
+<br>
+A civic engagement platform with AI-enhanced workflows, powered by Next.js, React, Supabase, and Gemini
+<br><br>
 
-## Features
+## About
 
-- **Collaborative Planning**: Community members can contribute ideas and enhancements to urban development projects
-- **AI-Enhanced Visualization**: Uses Gemini AI to generate visual representations of community ideas
-- **Interactive Design Process**: Transform static project images into dynamic, enhanced visions
-- **Inclusive Participation**: Accessible platform for all community members to participate in planning
+- **Collaborative Planning**: Community members can contribute ideas and proposals to urban development projects
+- **AI-Enhanced Visualization**: Generation of visual representations of community ideas
+- **AI-Enhanced Submission Process**: Support for checking limitations, writing a description, and content moderation
+- **User-Friendly Design**: Lower barriers to explore and write proposals
+- **Powerful Participation**: Making civic participation transparent, accessible, and effective for all members
+<br>
 
-## Getting Started
+## Local Development Setup
 
-First, run the development server:
+To run the current development build locally on your machine, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
+- **Node.js** (v18.x or higher)
+- **Git**
+- Access to **Supabase**
+- A **Gemini API Key** that is also enabled for **Google Perspectives**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-## Environment Setup
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/LukPle/common_ground.git
+   cd common_ground
+   ```
+   
+2. **Install dependencies:**
 
-Add these to `.env.local` (and to your host’s env vars in production):
+   ```sh
+    npm install
+   ```
 
-```bash
-GEMINI_API_KEY=your_api_key_here
-ACCESS_CODE=abc123
-```
+3. **Configure Environment Variables:**
+Create a .env.local file in the root directory and add your Supabase and Gemini API keys:
 
-`ACCESS_CODE` is a 6-character letter/digit code required before using the ideation page and its AI APIs for the purpose of locking API calls from random visitors. Leave it unset locally if you want the gate disabled during development.
+   ```sh
+   GEMINI_API_KEY=your_api_key_here
+   NEXT_PUBLIC_SUPABASE_URL=your_url_here
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_api_key_here
+   SUPABASE_SERVICE_ROLE_KEY=your_api_key_here
+   ACCESS_CODE=abc123
+   ```
 
-## Technology Stack
+`ACCESS_CODE` is a 6-character letter/digit code required before using the ideation page and its AI APIs. Leave it unset locally if you want the gate disabled during development. Set it in production to prevent random visitors from using paid APIs.
 
-This project is built with:
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **Google Gemini AI** - AI-powered image generation
+4. **Start the development server:**
 
-## Learn More
+   ```sh
+    npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open http://localhost:3000 with your browser to see the result.
+<br>
