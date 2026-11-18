@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     \`\`\`
     `;
 
-    const model = 'gemini-2.5-flash-lite';
+    const model = 'gemini-3.1-flash-lite';
     const contents = [{ role: 'user', parts: [{ text: combinedAnalysisPrompt }] }];
 
     const result = await genAI.models.generateContent({

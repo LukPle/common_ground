@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     
     Remember: This is an ENHANCEMENT of the provided image, not a new creation from scratch.`;
 
-    const model = 'gemini-3-pro-image-preview';
+    const model = 'gemini-3.1-flash-lite-image';
 
     type Part = { text?: string; inlineData?: { mimeType: string; data: string } };
     const parts: Part[] = [];

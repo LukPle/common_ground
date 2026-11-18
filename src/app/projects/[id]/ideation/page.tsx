@@ -137,8 +137,8 @@ export default function ProjectIdeationPage({
       <PageLayout>
         <main className="flex flex-col flex-grow">
           <Breadcrumbs items={breadcrumbItems} />
-          <div className="max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
-            <div className="bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
+            <div className="w-full bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
               <AccessGate onUnlocked={() => setIsUnlocked(true)} />
             </div>
           </div>
@@ -153,8 +153,8 @@ export default function ProjectIdeationPage({
         <main className="flex flex-col flex-grow">
           <Breadcrumbs items={breadcrumbItems} />
 
-          <div className="max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
-            <div className="bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-10 sm:pb-16">
+            <div className="w-full bg-white rounded-2xl border border-gray-150 p-8 sm:p-10">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
