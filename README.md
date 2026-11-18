@@ -12,7 +12,9 @@ A civic engagement platform with AI-enhanced workflows, powered by Next.js, Reac
 - **AI-Enhanced Submission Process**: Support for checking limitations, writing a description, and content moderation
 - **User-Friendly Design**: Lower barriers to explore and write proposals
 - **Powerful Participation**: Making civic participation transparent, accessible, and effective for all members
-<br>
+
+<img src="https://github.com/user-attachments/assets/7bf4707a-4c74-4638-99de-a04e7175ec43" alt="common ground" width="550" />
+<br><br>
 
 ## Local Development Setup
 
